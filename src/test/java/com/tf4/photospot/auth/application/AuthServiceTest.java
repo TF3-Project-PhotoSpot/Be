@@ -62,6 +62,9 @@ public class AuthServiceTest extends IntegrationTestSupport {
 	@SpyBean
 	private KakaoClient kakaoClient;
 
+	@MockBean
+	private AppleService appleService;
+
 	@TestFactory
 	@DisplayName("사용자 등록 시나리오")
 	Collection<DynamicTest> saveUser() {
@@ -248,6 +251,17 @@ public class AuthServiceTest extends IntegrationTestSupport {
 
 				// then
 				verify(slackAlert, times(2)).sendKakaoCallbackFailure(any(Exception.class), anyString(), anyString());
+			}),
+			dynamicTest("애플 계정 끊기 중 인증 코드가 비어있으면 예외를 던진다.", () -> {
+				var authorizationCode = "";
+				assertThatThrownBy(() -> authService.unlinkAppleAccount(authorizationCode))
+					.isInstanceOf(ApiException.class)
+					.hasMessage(AuthErrorCode.INVALID_APPLE_AUTHORIZATION_CODE.getMessage());
+			}),
+			dynamicTest("애플 계정 끊기 호출을 성공한다.", () -> {
+				var authorizationCode = "authorization_code";
+				authService.unlinkAppleAccount(authorizationCode);
+				verify(appleService, times(1)).unlink(anyString());
 			})
 		);
 	}
