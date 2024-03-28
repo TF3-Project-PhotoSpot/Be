@@ -17,9 +17,11 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestFactory;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.tf4.photospot.auth.application.request.KakaoUnlinkRequest;
 import com.tf4.photospot.auth.application.response.ReissueTokenResponse;
 import com.tf4.photospot.auth.domain.RefreshToken;
 import com.tf4.photospot.auth.infrastructure.JwtRedisRepository;
@@ -29,6 +31,7 @@ import com.tf4.photospot.global.exception.ApiException;
 import com.tf4.photospot.global.exception.domain.AuthErrorCode;
 import com.tf4.photospot.global.exception.domain.UserErrorCode;
 import com.tf4.photospot.global.util.SlackAlert;
+import com.tf4.photospot.mockobject.MockKakaoAuthConfig;
 import com.tf4.photospot.mockobject.WithCustomMockUser;
 import com.tf4.photospot.support.IntegrationTestSupport;
 import com.tf4.photospot.user.domain.User;
@@ -38,6 +41,7 @@ import com.tf4.photospot.user.infrastructure.UserQueryRepository;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
+@Import(MockKakaoAuthConfig.class)
 public class AuthServiceTest extends IntegrationTestSupport {
 	private final JwtService jwtService;
 	private final UserRepository userRepository;
@@ -55,7 +59,7 @@ public class AuthServiceTest extends IntegrationTestSupport {
 	@MockBean
 	private SlackAlert slackAlert;
 
-	@MockBean
+	@SpyBean
 	private KakaoClient kakaoClient;
 
 	@TestFactory
@@ -63,17 +67,17 @@ public class AuthServiceTest extends IntegrationTestSupport {
 	Collection<DynamicTest> saveUser() {
 		// given
 		String providerType = "kakao";
-		String account = "account_value";
+		String account = "456789";
 
 		return List.of(
-			dynamicTest("최초 로그인 시 사용자 정보를 DB에 저장한다.", () -> {
-				//when
-				var loginResponse = authService.oauthLogin(providerType, account);
-
-				//then
+			dynamicTest("카카오 로그인에 성공한다.", () -> {
+				var accessToken = "access_token";
+				var response = authService.kakaoLogin(accessToken, account);
 				assertAll(
-					() -> assertThat(loginResponse.hasLoggedInBefore()).isFalse(),
-					() -> assertThat(userRepository.findAll()).hasSize(1)
+					() -> assertFalse(response.hasLoggedInBefore()),
+					() -> assertThat(userRepository.findAll()).hasSize(1),
+					() -> assertThat(
+						userRepository.findById(response.getId()).orElseThrow().getProviderType()).isEqualTo("kakao")
 				);
 			}),
 			dynamicTest("기존에 로그인 했던 사용자는 DB에 저장하지 않는다.", () -> {
@@ -149,6 +153,13 @@ public class AuthServiceTest extends IntegrationTestSupport {
 		String accessToken = "Bearer " + jwtService.issueAccessToken(loginUser.getId(), loginUser.getRole().getType());
 
 		return Stream.of(
+			dynamicTest("카카오 회원탈퇴 시 카카오 서버와 통신하여 계정을 끊는다.", () -> {
+				var userId = loginUser.getId();
+				authService.unlinkAccountFromOauthServer(userId, null);
+				verify(authService, times(1)).unlinkKakaoAccount(any(User.class));
+				verify(kakaoService, times(1)).unlink(anyLong());
+				verify(kakaoClient, times(1)).unlink(anyString(), any(KakaoUnlinkRequest.class));
+			}),
 			dynamicTest("회원탈퇴 시 user 정보를 업데이트하고 JWT 토큰을 무효회한다.", () -> {
 				// given
 				assertNull(loginUser.getDeletedAt());

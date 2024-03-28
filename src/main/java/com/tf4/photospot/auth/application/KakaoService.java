@@ -29,11 +29,11 @@ public class KakaoService {
 	public AuthUserInfoDto getTokenInfo(String accessToken, String id) {
 		KakaoTokenInfoResponse response = kakaoClient.getTokenInfo(JwtConstant.PREFIX + accessToken);
 		validateInfo(id, response);
-		return new AuthUserInfoDto(String.valueOf(response.getId()));
+		return new AuthUserInfoDto(String.valueOf(response.getAccount()));
 	}
 
 	private void validateInfo(String id, KakaoTokenInfoResponse response) {
-		validateValue(String.valueOf(response.getId()), id);
+		validateValue(String.valueOf(response.getAccount()), id);
 		validateValue(String.valueOf(response.getAppId()), appId);
 		validateExpiration(response.getExpiresIn());
 	}

@@ -8,7 +8,8 @@ import lombok.Setter;
 @Setter
 @Getter
 public class KakaoTokenInfoResponse {
-	private Long id;
+	@JsonProperty("id")
+	private Long account;
 
 	@JsonProperty("expires_in")
 	private Integer expiresIn;
