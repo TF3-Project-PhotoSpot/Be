@@ -815,6 +815,27 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <td class="tableblock halign-left valign-top"><p class="tableblock">Apple ID 토큰이 만료되었습니다.</p></td>
 </tr>
 <tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AuthErrorCode</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>INVALID_APPLE_AUTHORIZATION_CODE</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">INVALID_APPLE_AUTHORIZATION_CODE</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">400</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">사용자 authorization code가 유효하지 않습니다.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AuthErrorCode</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>INVALID_PRIVATE_KEY</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">INVALID_PRIVATE_KEY</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">500</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Private Key가 올바르지 않습니다.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AuthErrorCode</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>EMPTY_PRIVATE_KEY</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EMPTY_PRIVATE_KEY</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">500</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Private Key가 존재하지 않습니다.</p></td>
+</tr>
+<tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">BookmarkErrorCode</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>EXISTS_FOLDER_NAME</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">EXISTS_FOLDER_NAME</p></td>
@@ -1279,9 +1300,14 @@ Host: localhost:8080</code></pre>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /api/v1/auth/unlink HTTP/1.1
+Content-Type: application/json;charset=UTF-8
 Authorization: Bearer access_token
+Content-Length: 32
 Host: localhost:8080
-Content-Type: application/x-www-form-urlencoded</code></pre>
+
+{
+  "authorizationCode" : null
+}</code></pre>
 </div>
 </div>
 <table class="tableblock frame-all grid-all stretch">
@@ -1302,35 +1328,8 @@ Content-Type: application/x-www-form-urlencoded</code></pre>
 </tr>
 </tbody>
 </table>
-<div class="sect3">
-<h4 id="_query_parameters"><a class="link" href="#_query_parameters">Query Parameters</a></h4>
-<table class="tableblock frame-all grid-all stretch">
-<colgroup>
-<col style="width: 20%;">
-<col style="width: 20%;">
-<col style="width: 20%;">
-<col style="width: 20%;">
-<col style="width: 20%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Parameter</th>
-<th class="tableblock halign-left valign-top">Optional</th>
-<th class="tableblock halign-left valign-top">Default</th>
-<th class="tableblock halign-left valign-top">Constraints</th>
-<th class="tableblock halign-left valign-top">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>isLinked</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">O</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">현재 계정 연결 상태</p></td>
-</tr>
-</tbody>
-</table>
+<div class="paragraph">
+<p>Unresolved directive in api/auth/auth.adoc - include::/Users/ojeegu/coding/project/build/generated-snippets/auth-controller-docs-test/unlink-user/query-parameters.adoc[]</p>
 </div>
 </div>
 </div>
@@ -1560,7 +1559,7 @@ Host: localhost:8080</code></pre>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_query_parameters_2"><a class="link" href="#_query_parameters_2">Query Parameters</a></h4>
+<h4 id="_query_parameters"><a class="link" href="#_query_parameters">Query Parameters</a></h4>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 20%;">
@@ -1668,7 +1667,7 @@ Host: localhost:8080</code></pre>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_query_parameters_3"><a class="link" href="#_query_parameters_3">Query Parameters</a></h4>
+<h4 id="_query_parameters_2"><a class="link" href="#_query_parameters_2">Query Parameters</a></h4>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 20%;">
@@ -1844,7 +1843,7 @@ Host: localhost:8080</code></pre>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_query_parameters_4"><a class="link" href="#_query_parameters_4">Query Parameters</a></h4>
+<h4 id="_query_parameters_3"><a class="link" href="#_query_parameters_3">Query Parameters</a></h4>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 20%;">
@@ -2208,7 +2207,7 @@ Host: localhost:8080</code></pre>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_query_parameters_5"><a class="link" href="#_query_parameters_5">Query Parameters</a></h4>
+<h4 id="_query_parameters_4"><a class="link" href="#_query_parameters_4">Query Parameters</a></h4>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 20%;">
@@ -2326,7 +2325,7 @@ Host: localhost:8080</code></pre>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_query_parameters_6"><a class="link" href="#_query_parameters_6">Query Parameters</a></h4>
+<h4 id="_query_parameters_5"><a class="link" href="#_query_parameters_5">Query Parameters</a></h4>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 20%;">
@@ -2567,7 +2566,7 @@ Host: localhost:8080</code></pre>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_query_parameters_7"><a class="link" href="#_query_parameters_7">Query Parameters</a></h4>
+<h4 id="_query_parameters_6"><a class="link" href="#_query_parameters_6">Query Parameters</a></h4>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 20%;">
@@ -2677,7 +2676,7 @@ Host: localhost:8080</code></pre>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_query_parameters_8"><a class="link" href="#_query_parameters_8">Query Parameters</a></h4>
+<h4 id="_query_parameters_7"><a class="link" href="#_query_parameters_7">Query Parameters</a></h4>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 20%;">
@@ -2999,7 +2998,7 @@ Host: localhost:8080</code></pre>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_query_parameters_9"><a class="link" href="#_query_parameters_9">Query Parameters</a></h4>
+<h4 id="_query_parameters_8"><a class="link" href="#_query_parameters_8">Query Parameters</a></h4>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 20%;">
@@ -3109,7 +3108,7 @@ Host: localhost:8080</code></pre>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_query_parameters_10"><a class="link" href="#_query_parameters_10">Query Parameters</a></h4>
+<h4 id="_query_parameters_9"><a class="link" href="#_query_parameters_9">Query Parameters</a></h4>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 20%;">
@@ -3912,7 +3911,7 @@ Host: localhost:8080</code></pre>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_query_parameters_11"><a class="link" href="#_query_parameters_11">Query Parameters</a></h4>
+<h4 id="_query_parameters_10"><a class="link" href="#_query_parameters_10">Query Parameters</a></h4>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 20%;">
@@ -4039,7 +4038,7 @@ Host: localhost:8080</code></pre>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_query_parameters_12"><a class="link" href="#_query_parameters_12">Query Parameters</a></h4>
+<h4 id="_query_parameters_11"><a class="link" href="#_query_parameters_11">Query Parameters</a></h4>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 20%;">
@@ -4149,7 +4148,7 @@ Host: localhost:8080</code></pre>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_query_parameters_13"><a class="link" href="#_query_parameters_13">Query Parameters</a></h4>
+<h4 id="_query_parameters_12"><a class="link" href="#_query_parameters_12">Query Parameters</a></h4>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 20%;">
@@ -4744,7 +4743,7 @@ Host: localhost:8080</code></pre>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_query_parameters_14"><a class="link" href="#_query_parameters_14">Query Parameters</a></h4>
+<h4 id="_query_parameters_13"><a class="link" href="#_query_parameters_13">Query Parameters</a></h4>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 20%;">
@@ -5162,7 +5161,7 @@ Host: localhost:8080</code></pre>
 <div id="footer">
 <div id="footer-text">
 Version 0.0.1-SNAPSHOT<br>
-Last updated 2024-03-25 05:26:34 +0900
+Last updated 2024-03-28 23:19:22 +0900
 </div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/highlight.min.js"></script>
