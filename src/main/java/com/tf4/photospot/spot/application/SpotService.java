@@ -1,6 +1,11 @@
 package com.tf4.photospot.spot.application;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
@@ -16,12 +21,16 @@ import com.tf4.photospot.spot.application.request.NearbySpotRequest;
 import com.tf4.photospot.spot.application.request.RecommendedSpotsRequest;
 import com.tf4.photospot.spot.application.response.MostPostTagRank;
 import com.tf4.photospot.spot.application.response.NearbySpotListResponse;
+import com.tf4.photospot.spot.application.response.PeriodPostResponse;
+import com.tf4.photospot.spot.application.response.PeriodSpotResponse;
 import com.tf4.photospot.spot.application.response.RecommendedSpotListResponse;
 import com.tf4.photospot.spot.application.response.SpotCoordResponse;
 import com.tf4.photospot.spot.application.response.SpotResponse;
 import com.tf4.photospot.spot.domain.Spot;
 import com.tf4.photospot.spot.domain.SpotRepository;
 import com.tf4.photospot.spot.infrastructure.SpotQueryRepository;
+import com.tf4.photospot.user.application.UserService;
+import com.tf4.photospot.user.domain.User;
 
 import lombok.RequiredArgsConstructor;
 
@@ -33,6 +42,9 @@ public class SpotService {
 	private final SpotQueryRepository spotQueryRepository;
 	private final PostJdbcRepository postJdbcRepository;
 	private final PostQueryRepository postQueryRepository;
+	private final UserService userService;
+
+	private static final DateTimeFormatter PERIOD_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
 	/*
 	 *	특정 좌표의 반경 내 추천 스팟들의 최신 방명록 미리보기를 조회합니다.
@@ -74,5 +86,33 @@ public class SpotService {
 
 	public List<PostPreviewResponse> getRecentPostPreviewsInSpots(List<Spot> spots, int postPreviewCount) {
 		return postJdbcRepository.findRecentPostPreviewsInSpots(spots, postPreviewCount);
+	}
+
+	public List<PeriodSpotResponse> findSpotsOfMyPostsWithinPeriod(Long userId, String start, String end) {
+		LocalDate startDate = LocalDate.parse(start, PERIOD_FORMATTER);
+		LocalDate endDate = LocalDate.parse(end, PERIOD_FORMATTER);
+		validatePeriod(startDate, endDate);
+		User user = userService.getActiveUser(userId);
+		final List<PeriodPostResponse> posts = postQueryRepository.findSpotsWithinPeriod(user.getId(), startDate,
+			endDate);
+		final Map<Long, List<PeriodPostResponse>> postsGroupBySpot = posts.stream()
+			.collect(Collectors.groupingBy(PeriodPostResponse::spotId));
+		return postsGroupBySpot.keySet().stream()
+			.map(spotId -> PeriodSpotResponse.from(postsGroupBySpot.get(spotId)))
+			.toList();
+	}
+
+	private void validatePeriod(LocalDate startDate, LocalDate endDate) {
+		long days = calculatePeriod(startDate, endDate) + 1;
+		if (days > 7) {
+			throw new ApiException(SpotErrorCode.EXCEEDED_PERIOD);
+		}
+	}
+
+	private long calculatePeriod(LocalDate startDate, LocalDate endDate) {
+		if (startDate.isAfter(endDate)) {
+			throw new ApiException(SpotErrorCode.INVALID_PERIOD);
+		}
+		return ChronoUnit.DAYS.between(startDate, endDate);
 	}
 }

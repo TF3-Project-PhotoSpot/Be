@@ -1,5 +1,6 @@
 package com.tf4.photospot.support;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
@@ -86,10 +87,11 @@ public class TestFixture {
 		return RANDOM.nextInt(LIKE_COUNT_RANGE);
 	}
 
-	public static Photo createPhoto(String photoUrl) {
+	public static Photo createPhoto(String photoUrl, LocalDateTime takenAt) {
 		return Photo.builder()
 			.photoUrl(photoUrl)
 			.coord(createPoint())
+			.takenAt(takenAt)
 			.build();
 	}
 
@@ -99,6 +101,10 @@ public class TestFixture {
 			.bubble(createBubble(text, posX, posY))
 			.coord(createPoint())
 			.build();
+	}
+
+	public static Photo createPhoto(String photoUrl) {
+		return createPhoto(photoUrl, LocalDateTime.now().minusDays(1));
 	}
 
 	public static Photo createPhoto() {

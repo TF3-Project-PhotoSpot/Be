@@ -4,11 +4,15 @@ import static com.tf4.photospot.global.util.PointConverter.*;
 import static com.tf4.photospot.support.TestFixture.*;
 import static java.util.Comparator.*;
 import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.DynamicTest.*;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.DisplayName;
@@ -24,6 +28,9 @@ import com.tf4.photospot.bookmark.domain.Bookmark;
 import com.tf4.photospot.bookmark.domain.BookmarkFolder;
 import com.tf4.photospot.bookmark.domain.BookmarkFolderRepository;
 import com.tf4.photospot.bookmark.domain.BookmarkRepository;
+import com.tf4.photospot.global.exception.ApiException;
+import com.tf4.photospot.global.exception.domain.SpotErrorCode;
+import com.tf4.photospot.photo.domain.Photo;
 import com.tf4.photospot.post.application.request.PostSearchCondition;
 import com.tf4.photospot.post.application.request.PostSearchType;
 import com.tf4.photospot.post.application.response.PostPreviewResponse;
@@ -34,6 +41,7 @@ import com.tf4.photospot.post.domain.Tag;
 import com.tf4.photospot.post.domain.TagRepository;
 import com.tf4.photospot.spot.application.request.NearbySpotRequest;
 import com.tf4.photospot.spot.application.request.RecommendedSpotsRequest;
+import com.tf4.photospot.spot.application.response.IncludedPostResponse;
 import com.tf4.photospot.spot.application.response.MostPostTagRank;
 import com.tf4.photospot.spot.application.response.NearbySpotListResponse;
 import com.tf4.photospot.spot.application.response.RecommendedSpotListResponse;
@@ -301,5 +309,49 @@ class SpotServiceTest extends IntegrationTestSupport {
 		assertThat(mostPostTagRanks).isNotEmpty();
 		assertThat(mostPostTagRanks).extracting("name").containsExactly("tag1", "tag2", "tag3");
 		assertThat(mostPostTagRanks).extracting("count").containsExactly(3, 2, 1);
+	}
+
+	@TestFactory
+	Stream<DynamicTest> findSpotsOfMyPostWithinPeriod() {
+		int totalSpot = 3;
+		List<Spot> spots = createList(TestFixture::createSpot, totalSpot);
+		spotRepository.saveAll(spots);
+		User writer = createUser("작성자");
+		userRepository.save(writer);
+		List<Photo> photos = List.of(
+			createPhoto("url1", LocalDateTime.now().minusDays(1)),
+			createPhoto("url2", LocalDateTime.now().minusDays(4)),
+			createPhoto("wrong_url", LocalDateTime.now().minusDays(10)));
+		postRepository.saveAll(IntStream.range(0, photos.size())
+			.mapToObj(i -> createPost(spots.get(i), writer, photos.get(i)))
+			.toList());
+		return Stream.of(
+			dynamicTest("날짜에 해당하는 스팟이 없으면 빈 리스트가 반환된다.", () -> {
+				String start = "2024-01-01";
+				String end = "2024-01-07";
+				assertThat(spotService.findSpotsOfMyPostsWithinPeriod(writer.getId(), start, end)).isEmpty();
+			}),
+			dynamicTest("시작 날짜가 종료 날짜 뒤인 경우 예외를 던진다.", () -> {
+				String start = "2024-01-05";
+				String end = "2024-01-01";
+				assertThatThrownBy(() -> spotService.findSpotsOfMyPostsWithinPeriod(writer.getId(), start, end))
+					.isInstanceOf(ApiException.class).hasMessage(SpotErrorCode.INVALID_PERIOD.getMessage());
+			}),
+			dynamicTest("조회 기간이 7일을 초과하는 경우 예외를 던진다.", () -> {
+				String start = "2024-01-01";
+				String end = "2024-01-08";
+				assertThatThrownBy(() -> spotService.findSpotsOfMyPostsWithinPeriod(writer.getId(), start, end))
+					.isInstanceOf(ApiException.class).hasMessage(SpotErrorCode.EXCEEDED_PERIOD.getMessage());
+			}),
+			dynamicTest("조회 기간에 포함되는 스팟을 반환한다.", () -> {
+				String start = LocalDateTime.now().minusDays(6).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+				String end = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+				var responses = spotService.findSpotsOfMyPostsWithinPeriod(writer.getId(), start, end);
+				assertThat(responses.size()).isEqualTo(2);
+				assertTrue(responses.stream().flatMap(response -> response.posts().stream())
+					.map(IncludedPostResponse::photoUrl)
+					.allMatch(url -> url.contains("url1") || url.contains("url2") && !url.contains("wrong_url")));
+			})
+		);
 	}
 }

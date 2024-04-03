@@ -11,6 +11,8 @@ import static com.tf4.photospot.post.domain.QPostTag.*;
 import static com.tf4.photospot.post.domain.QReport.*;
 import static com.tf4.photospot.spot.domain.QSpot.*;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.domain.Pageable;
@@ -34,6 +36,8 @@ import com.tf4.photospot.post.domain.Post;
 import com.tf4.photospot.post.domain.PostTag;
 import com.tf4.photospot.post.domain.Tag;
 import com.tf4.photospot.post.domain.TagRepository;
+import com.tf4.photospot.spot.application.response.PeriodPostResponse;
+import com.tf4.photospot.spot.application.response.QPeriodPostResponse;
 import com.tf4.photospot.user.domain.QUser;
 import com.tf4.photospot.user.domain.User;
 
@@ -197,5 +201,25 @@ public class PostQueryRepository extends QueryDslUtils {
 			.where(postLike.post.id.eq(postId).and(postLike.user.id.eq(userId)))
 			.execute();
 		return deleted != 0L;
+	}
+
+	public List<PeriodPostResponse> findSpotsWithinPeriod(Long userId, LocalDate start, LocalDate end) {
+		return queryFactory.select(new QPeriodPostResponse(
+				post.id,
+				spot.id,
+				spot.coord,
+				photo.photoUrl,
+				photo.takenAt))
+			.from(post)
+			.join(post.spot, spot)
+			.join(post.photo, photo)
+			.where(post.writer.id.eq(userId), isWithInPeriodBoundary(start, end))
+			.fetch();
+	}
+
+	private BooleanExpression isWithInPeriodBoundary(LocalDate start, LocalDate end) {
+		LocalDateTime startDate = start.atStartOfDay();
+		LocalDateTime endDate = end.atStartOfDay().plusDays(1).minusNanos(1);
+		return photo.takenAt.between(startDate, endDate);
 	}
 }
