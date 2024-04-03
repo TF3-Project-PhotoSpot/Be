@@ -24,7 +24,7 @@ public class KakaoService {
 	@Value("${kakao.admin-key}")
 	private String adminKey;
 
-	private static final String KAKAO_AK_PREFIX = "KakaoAK";
+	private static final String KAKAO_AK_PREFIX = "KakaoAK ";
 
 	public AuthUserInfoDto getTokenInfo(String accessToken, String id) {
 		KakaoTokenInfoResponse response = kakaoClient.getTokenInfo(JwtConstant.PREFIX + accessToken);
