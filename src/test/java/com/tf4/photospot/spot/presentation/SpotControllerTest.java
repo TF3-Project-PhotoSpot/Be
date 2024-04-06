@@ -154,4 +154,58 @@ class SpotControllerTest {
 			.andExpect(jsonPath("$.errors[0].value").value(radius))
 			.andExpect(jsonPath("$.errors[0].message").value("반경(m)은 0보다 커야 됩니다."));
 	}
+
+	@Test
+	@DisplayName("기간 조회 시 시작일이 빈 값이어선 안된다.")
+	void getSpotsFailWithStartNull() throws Exception {
+		String start = null;
+		mockMvc.perform(get("/api/v1/spots/mine/period")
+				.queryParam("start", start)
+				.queryParam("end", "2024-01-07"))
+			.andDo(print())
+			.andExpect(status().isBadRequest())
+			.andExpect(jsonPath("$.code").value("INVALID_PARAMETER"))
+			.andExpect(jsonPath("$.errors[0].message").value("시작일 또는 종료일에 빈 값이 들어갈 수 없습니다."))
+			.andExpect(jsonPath("$.errors[0].field").value("start"));
+	}
+
+	@Test
+	@DisplayName("기간 조회 시 종료일이 빈 값이어선 안된다.")
+	void getSpotsFailWithEndNull() throws Exception {
+		String end = null;
+		mockMvc.perform(get("/api/v1/spots/mine/period")
+				.queryParam("start", "2024-01-01")
+				.queryParam("end", end))
+			.andDo(print())
+			.andExpect(status().isBadRequest())
+			.andExpect(jsonPath("$.code").value("INVALID_PARAMETER"))
+			.andExpect(jsonPath("$.errors[0].message").value("시작일 또는 종료일에 빈 값이 들어갈 수 없습니다."))
+			.andExpect(jsonPath("$.errors[0].field").value("end"));
+	}
+
+	@Test
+	@DisplayName("기간 조회 시 시작일은 종료일 이전이어야 한다.")
+	void getSpotsFailWithinInvalidPeriod() throws Exception {
+		mockMvc.perform(get("/api/v1/spots/mine/period")
+				.queryParam("start", "2024-01-05")
+				.queryParam("end", "2024-01-01"))
+			.andDo(print())
+			.andExpect(status().isBadRequest())
+			.andExpect(jsonPath("$.code").value("INVALID_PARAMETER"))
+			.andExpect(jsonPath("$.errors[0].message").value("시작일은 종료일 이전이어야 합니다."))
+			.andExpect(jsonPath("$.errors[0].field").value("start"));
+	}
+
+	@Test
+	@DisplayName("기간 조회 시 7일을 초과할 수 없다.")
+	void getSpotsFailWithinExceededPeriod() throws Exception {
+		mockMvc.perform(get("/api/v1/spots/mine/period")
+				.queryParam("start", "2024-01-01")
+				.queryParam("end", "2024-01-08"))
+			.andDo(print())
+			.andExpect(status().isBadRequest())
+			.andExpect(jsonPath("$.code").value("INVALID_PARAMETER"))
+			.andExpect(jsonPath("$.errors[0].message").value("선택한 기간이 7일을 초과합니다."))
+			.andExpect(jsonPath("$.errors[0].field").value("end"));
+	}
 }
