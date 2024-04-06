@@ -32,6 +32,7 @@ import com.tf4.photospot.spot.application.response.RecommendedSpotResponse;
 import com.tf4.photospot.spot.application.response.SpotCoordResponse;
 import com.tf4.photospot.spot.application.response.SpotResponse;
 import com.tf4.photospot.spot.presentation.SpotController;
+import com.tf4.photospot.spot.presentation.request.DateDto;
 import com.tf4.photospot.spring.docs.RestDocsSupport;
 
 public class SpotControllerDocsTest extends RestDocsSupport {
@@ -211,17 +212,17 @@ public class SpotControllerDocsTest extends RestDocsSupport {
 		var post1 = new IncludedPostResponse(1L, "photo1.com", LocalDateTime.of(2024, 3, 27, 15, 30));
 		var post2 = new IncludedPostResponse(2L, "photo2.com", LocalDateTime.of(2024, 3, 29, 11, 20));
 		var spot = new PeriodSpotResponse(1L, DEFAULT_COORD, List.of(post1, post2));
-		given(spotService.findSpotsOfMyPostsWithinPeriod(anyLong(), anyString(), anyString())).willReturn(
+		given(spotService.findSpotsOfMyPostsWithinPeriod(anyLong(), any(DateDto.class))).willReturn(
 			List.of(spot));
 
 		mockMvc.perform(get("/api/v1/spots/mine/period")
-				.queryParam("start", "2024.03.26")
-				.queryParam("end", "2024.03.30"))
+				.queryParam("start", "2024-03-26")
+				.queryParam("end", "2024-03-30"))
 			.andExpect(status().isOk())
 			.andDo(restDocsTemplate(
 				queryParameters(
-					parameterWithName("start").description("시작 날짜").attributes(constraints("종료 날짜보다 이전이어야 합니다.")),
-					parameterWithName("end").description("종료 날짜").attributes(constraints("시작일로부터 7일 이내까지 가능합니다."))
+					parameterWithName("start").description("시작일").attributes(constraints("종료일보다 이전이어야 합니다.")),
+					parameterWithName("end").description("종료일").attributes(constraints("시작일로부터 7일 이내까지 가능합니다."))
 				),
 				responseFields(
 					fieldWithPath("spots[].spotId").type(JsonFieldType.NUMBER).description("스팟 id"),

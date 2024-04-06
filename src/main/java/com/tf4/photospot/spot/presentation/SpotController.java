@@ -25,6 +25,7 @@ import com.tf4.photospot.spot.application.request.RecommendedSpotsRequest;
 import com.tf4.photospot.spot.application.response.NearbySpotListResponse;
 import com.tf4.photospot.spot.application.response.RecommendedSpotListResponse;
 import com.tf4.photospot.spot.application.response.SpotResponse;
+import com.tf4.photospot.spot.presentation.request.DateDto;
 import com.tf4.photospot.spot.presentation.request.FindSpotHttpRequest;
 import com.tf4.photospot.spot.presentation.response.PeriodSpotListResponse;
 import com.tf4.photospot.spot.presentation.response.RecommendedSpotHttpResponse;
@@ -105,9 +106,8 @@ public class SpotController {
 	@GetMapping("/mine/period")
 	public PeriodSpotListResponse getSpotsOfMyPostsWithinPeriod(
 		@AuthUserId Long userId,
-		@RequestParam("start") String start,
-		@RequestParam("end") String end
+		@ModelAttribute @Valid DateDto dateDto
 	) {
-		return new PeriodSpotListResponse(spotService.findSpotsOfMyPostsWithinPeriod(userId, start, end));
+		return new PeriodSpotListResponse(spotService.findSpotsOfMyPostsWithinPeriod(userId, dateDto));
 	}
 }

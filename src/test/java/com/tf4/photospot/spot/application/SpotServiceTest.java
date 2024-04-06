@@ -7,8 +7,8 @@ import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.DynamicTest.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -28,8 +28,6 @@ import com.tf4.photospot.bookmark.domain.Bookmark;
 import com.tf4.photospot.bookmark.domain.BookmarkFolder;
 import com.tf4.photospot.bookmark.domain.BookmarkFolderRepository;
 import com.tf4.photospot.bookmark.domain.BookmarkRepository;
-import com.tf4.photospot.global.exception.ApiException;
-import com.tf4.photospot.global.exception.domain.SpotErrorCode;
 import com.tf4.photospot.photo.domain.Photo;
 import com.tf4.photospot.post.application.request.PostSearchCondition;
 import com.tf4.photospot.post.application.request.PostSearchType;
@@ -49,6 +47,7 @@ import com.tf4.photospot.spot.application.response.RecommendedSpotResponse;
 import com.tf4.photospot.spot.application.response.SpotResponse;
 import com.tf4.photospot.spot.domain.Spot;
 import com.tf4.photospot.spot.domain.SpotRepository;
+import com.tf4.photospot.spot.presentation.request.DateDto;
 import com.tf4.photospot.support.IntegrationTestSupport;
 import com.tf4.photospot.support.TestFixture;
 import com.tf4.photospot.user.domain.User;
@@ -327,26 +326,12 @@ class SpotServiceTest extends IntegrationTestSupport {
 			.toList());
 		return Stream.of(
 			dynamicTest("날짜에 해당하는 스팟이 없으면 빈 리스트가 반환된다.", () -> {
-				String start = "2024-01-01";
-				String end = "2024-01-07";
-				assertThat(spotService.findSpotsOfMyPostsWithinPeriod(writer.getId(), start, end)).isEmpty();
-			}),
-			dynamicTest("시작 날짜가 종료 날짜 뒤인 경우 예외를 던진다.", () -> {
-				String start = "2024-01-05";
-				String end = "2024-01-01";
-				assertThatThrownBy(() -> spotService.findSpotsOfMyPostsWithinPeriod(writer.getId(), start, end))
-					.isInstanceOf(ApiException.class).hasMessage(SpotErrorCode.INVALID_PERIOD.getMessage());
-			}),
-			dynamicTest("조회 기간이 7일을 초과하는 경우 예외를 던진다.", () -> {
-				String start = "2024-01-01";
-				String end = "2024-01-08";
-				assertThatThrownBy(() -> spotService.findSpotsOfMyPostsWithinPeriod(writer.getId(), start, end))
-					.isInstanceOf(ApiException.class).hasMessage(SpotErrorCode.EXCEEDED_PERIOD.getMessage());
+				var dateDto = new DateDto(LocalDate.of(2024, 1, 1), LocalDate.of(2024, 1, 7));
+				assertThat(spotService.findSpotsOfMyPostsWithinPeriod(writer.getId(), dateDto)).isEmpty();
 			}),
 			dynamicTest("조회 기간에 포함되는 스팟을 반환한다.", () -> {
-				String start = LocalDateTime.now().minusDays(6).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-				String end = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-				var responses = spotService.findSpotsOfMyPostsWithinPeriod(writer.getId(), start, end);
+				var dateDto = new DateDto(LocalDate.now().minusDays(6), LocalDate.now());
+				var responses = spotService.findSpotsOfMyPostsWithinPeriod(writer.getId(), dateDto);
 				assertThat(responses.size()).isEqualTo(2);
 				assertTrue(responses.stream().flatMap(response -> response.posts().stream())
 					.map(IncludedPostResponse::photoUrl)

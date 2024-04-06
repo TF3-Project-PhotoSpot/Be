@@ -1,8 +1,6 @@
 package com.tf4.photospot.spot.application;
 
-import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -29,6 +27,7 @@ import com.tf4.photospot.spot.application.response.SpotResponse;
 import com.tf4.photospot.spot.domain.Spot;
 import com.tf4.photospot.spot.domain.SpotRepository;
 import com.tf4.photospot.spot.infrastructure.SpotQueryRepository;
+import com.tf4.photospot.spot.presentation.request.DateDto;
 import com.tf4.photospot.user.application.UserService;
 import com.tf4.photospot.user.domain.User;
 
@@ -88,31 +87,14 @@ public class SpotService {
 		return postJdbcRepository.findRecentPostPreviewsInSpots(spots, postPreviewCount);
 	}
 
-	public List<PeriodSpotResponse> findSpotsOfMyPostsWithinPeriod(Long userId, String start, String end) {
-		LocalDate startDate = LocalDate.parse(start, PERIOD_FORMATTER);
-		LocalDate endDate = LocalDate.parse(end, PERIOD_FORMATTER);
-		validatePeriod(startDate, endDate);
+	public List<PeriodSpotResponse> findSpotsOfMyPostsWithinPeriod(Long userId, DateDto dateDto) {
 		User user = userService.getActiveUser(userId);
-		final List<PeriodPostResponse> posts = postQueryRepository.findSpotsWithinPeriod(user.getId(), startDate,
-			endDate);
+		final List<PeriodPostResponse> posts = postQueryRepository.findSpotsWithinPeriod(user.getId(), dateDto.start(),
+			dateDto.end());
 		final Map<Long, List<PeriodPostResponse>> postsGroupBySpot = posts.stream()
 			.collect(Collectors.groupingBy(PeriodPostResponse::spotId));
 		return postsGroupBySpot.keySet().stream()
 			.map(spotId -> PeriodSpotResponse.from(postsGroupBySpot.get(spotId)))
 			.toList();
-	}
-
-	private void validatePeriod(LocalDate startDate, LocalDate endDate) {
-		long days = calculatePeriod(startDate, endDate) + 1;
-		if (days > 7) {
-			throw new ApiException(SpotErrorCode.EXCEEDED_PERIOD);
-		}
-	}
-
-	private long calculatePeriod(LocalDate startDate, LocalDate endDate) {
-		if (startDate.isAfter(endDate)) {
-			throw new ApiException(SpotErrorCode.INVALID_PERIOD);
-		}
-		return ChronoUnit.DAYS.between(startDate, endDate);
 	}
 }
