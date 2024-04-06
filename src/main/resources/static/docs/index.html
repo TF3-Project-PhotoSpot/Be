@@ -2186,7 +2186,7 @@ Host: localhost:8080</code></pre>
 <h3 id="_특정_기간_내가_쓴_방명록의_장소_리스트_조회"><a class="link" href="#_특정_기간_내가_쓴_방명록의_장소_리스트_조회">특정 기간 내가 쓴 방명록의 장소 리스트 조회</a></h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /api/v1/spots/mine/period?start=2024.03.26&amp;end=2024.03.30 HTTP/1.1
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /api/v1/spots/mine/period?start=2024-03-26&amp;end=2024-03-30 HTTP/1.1
 Host: localhost:8080</code></pre>
 </div>
 </div>
@@ -2214,15 +2214,15 @@ Host: localhost:8080</code></pre>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>start</code></p></td>
 <td class="tableblock halign-left valign-top"></td>
 <td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">종료 날짜보다 이전이어야 합니다.<br></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">시작 날짜</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">종료일보다 이전이어야 합니다.<br></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">시작일</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>end</code></p></td>
 <td class="tableblock halign-left valign-top"></td>
 <td class="tableblock halign-left valign-top"></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">시작일로부터 7일 이내까지 가능합니다.<br></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">종료 날짜</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">종료일</p></td>
 </tr>
 </tbody>
 </table>
