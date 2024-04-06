@@ -1,6 +1,5 @@
 package com.tf4.photospot.spot.application;
 
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -42,8 +41,6 @@ public class SpotService {
 	private final PostJdbcRepository postJdbcRepository;
 	private final PostQueryRepository postQueryRepository;
 	private final UserService userService;
-
-	private static final DateTimeFormatter PERIOD_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
 	/*
 	 *	특정 좌표의 반경 내 추천 스팟들의 최신 방명록 미리보기를 조회합니다.
