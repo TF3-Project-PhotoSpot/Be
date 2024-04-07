@@ -11,7 +11,9 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class CustomExceptionFilter extends OncePerRequestFilter {
 
 	@Override
@@ -20,6 +22,7 @@ public class CustomExceptionFilter extends OncePerRequestFilter {
 		try {
 			filterChain.doFilter(request, response);
 		} catch (ApiException ex) {
+			log.error(ex.getMessage());
 			ErrorResponseFactory.create(request, response, ex);
 		}
 	}

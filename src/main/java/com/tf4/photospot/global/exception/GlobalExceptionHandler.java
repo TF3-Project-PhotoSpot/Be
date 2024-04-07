@@ -32,6 +32,7 @@ import lombok.extern.slf4j.Slf4j;
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 	@ExceptionHandler(ApiException.class)
 	public ResponseEntity<Object> handleApiException(ApiException ex) {
+		log.error(ex.getMessage());
 		return createResponse(ex.getErrorCode());
 	}
 
@@ -47,6 +48,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 			.flatMap(Collection::stream)
 			.map(error -> ValidationError.builder().message(error.getDefaultMessage()).build())
 			.toList();
+		log.error("ERRORS : {}", errorMessages);
 		return createResponse(CommonErrorCode.INVALID_PARAMETER, errorMessages);
 	}
 
