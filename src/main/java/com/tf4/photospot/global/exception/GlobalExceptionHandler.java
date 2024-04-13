@@ -32,7 +32,7 @@ import lombok.extern.slf4j.Slf4j;
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 	@ExceptionHandler(ApiException.class)
 	public ResponseEntity<Object> handleApiException(ApiException ex) {
-		log.error(ex.getMessage());
+		log.info(ex.getMessage());
 		return createResponse(ex.getErrorCode());
 	}
 
@@ -48,7 +48,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 			.flatMap(Collection::stream)
 			.map(error -> ValidationError.builder().message(error.getDefaultMessage()).build())
 			.toList();
-		log.error("ERRORS : {}", errorMessages);
+		log.info("ERRORS : {}", errorMessages);
 		return createResponse(CommonErrorCode.INVALID_PARAMETER, errorMessages);
 	}
 
@@ -59,7 +59,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 		@NotNull HttpStatusCode status,
 		@NotNull WebRequest request
 	) {
-		log.error(ex.getMessage());
+		log.info(ex.getMessage());
 		final List<ValidationError> errors = ex.getBindingResult().getFieldErrors()
 			.stream()
 			.map(ValidationError::from)
@@ -69,7 +69,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
 	@ExceptionHandler(IllegalArgumentException.class)
 	public ResponseEntity<Object> handleIllegalArgumentException(IllegalArgumentException ex) {
-		log.error(ex.getMessage());
+		log.info(ex.getMessage());
 		return createResponse(CommonErrorCode.INVALID_PARAMETER);
 	}
 
@@ -77,7 +77,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 	public ResponseEntity<Object> handleConstraintViolationException(
 		ConstraintViolationException ex
 	) {
-		log.error(ex.getMessage());
+		log.info(ex.getMessage());
 		final List<ValidationError> errors = ex.getConstraintViolations().stream()
 			.map(violation -> ValidationError.builder()
 				.field(violation.getPropertyPath().toString())
@@ -92,7 +92,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 	public ResponseEntity<Object> handleMethodArgumentTypeMismatchException(
 		MethodArgumentTypeMismatchException ex
 	) {
-		log.error(ex.getMessage());
+		log.info(ex.getMessage());
 		final ValidationError error = ValidationError.builder()
 			.field(ex.getName())
 			.value(ex.getValue())
@@ -108,7 +108,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 		@NotNull HttpStatusCode status,
 		@NotNull WebRequest request
 	) {
-		log.error(ex.getMessage());
+		log.info(ex.getMessage());
 		return createResponse(CommonErrorCode.MISSING_REQUEST_PARAMETER);
 	}
 
@@ -119,7 +119,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 		@NotNull HttpStatusCode status,
 		@NotNull WebRequest request
 	) {
-		log.error(ex.getMessage());
+		log.info(ex.getMessage());
 		return createResponse(CommonErrorCode.MISSING_REQUEST_PARAMETER);
 	}
 
