@@ -54,13 +54,13 @@ public class AuthControllerDocsTest extends RestDocsSupport {
 
 	@Test
 	@DisplayName("회원 탈퇴")
-	void unlinkUser() throws Exception {
+	void withdrawalUser() throws Exception {
 		// given
 		var request = new UnlinkRequest(null);
 		given(userService.getActiveUser(anyLong())).willReturn(createUser("사용자", "12345", "kakao"));
 
 		// when
-		mockMvc.perform(post("/api/v1/auth/unlink")
+		mockMvc.perform(post("/api/v1/auth/withdrawal")
 				.header("Authorization", "Bearer access_token")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(mapper.writeValueAsString(request)))

@@ -35,7 +35,7 @@ public class SecurityConfig {
 	@Bean
 	public WebSecurityCustomizer webSecurityCustomizer() {
 		return (web -> web.ignoring()
-			.requestMatchers("/api/v1/auth/unlink/callback")
+			.requestMatchers("/api/v1/auth/withdrawal/callback")
 			.requestMatchers("/docs/index.html")
 			.requestMatchers(PathRequest.toStaticResources().atCommonLocations()));
 	}

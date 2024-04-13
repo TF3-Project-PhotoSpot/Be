@@ -34,7 +34,7 @@ public class AuthController {
 		return authService.reissueToken(loginUserDto.getId(), refreshToken);
 	}
 
-	@PostMapping("/unlink")
+	@PostMapping("/withdrawal")
 	public ApiResponse unlinkUser(
 		@AuthUserId Long userId,
 		@RequestHeader(JwtConstant.AUTHORIZATION_HEADER) String accessToken,
@@ -45,7 +45,7 @@ public class AuthController {
 		return ApiResponse.SUCCESS;
 	}
 
-	@GetMapping("/unlink/callback")
+	@GetMapping("/withdrawal/callback")
 	public void deleteUnlinkedKakaoUser(
 		@RequestHeader(JwtConstant.AUTHORIZATION_HEADER) String adminKey,
 		@RequestParam("app_id") String appId,

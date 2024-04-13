@@ -2,11 +2,10 @@ package com.tf4.photospot.user.application;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import com.tf4.photospot.global.exception.ApiException;
 import com.tf4.photospot.global.exception.domain.UserErrorCode;
-import com.tf4.photospot.user.application.response.NicknameUpdateResponse;
-import com.tf4.photospot.user.application.response.ProfileUpdateResponse;
 import com.tf4.photospot.user.application.response.UserInfoResponse;
 import com.tf4.photospot.user.domain.User;
 import com.tf4.photospot.user.domain.UserRepository;
@@ -23,20 +22,32 @@ public class UserService {
 	private final UserRepository userRepository;
 
 	@Transactional
-	public ProfileUpdateResponse updateProfile(Long userId, String imageUrl) {
+	public UserInfoResponse updateUserInfo(Long userId, String imageUrl, String nickname) {
 		User user = getActiveUser(userId);
-		user.updateProfile(imageUrl);
-		return new ProfileUpdateResponse(imageUrl);
+		updateNickname(user, nickname);
+		updateProfile(user, imageUrl);
+		return UserInfoResponse.builder()
+			.userId(userId)
+			.nickname(user.getNickname())
+			.profileUrl(user.getProfileUrl())
+			.provider(user.getProviderType())
+			.build();
 	}
 
-	@Transactional
-	public NicknameUpdateResponse updateNickname(Long userId, String nickname) {
+	private void updateNickname(User user, String nickname) {
+		if (!StringUtils.hasText(nickname)) {
+			return;
+		}
 		if (isNicknameDuplicated(nickname)) {
 			throw new ApiException(UserErrorCode.DUPLICATE_NICKNAME);
 		}
-		User user = getActiveUser(userId);
 		user.updateNickname(nickname);
-		return new NicknameUpdateResponse(nickname);
+	}
+
+	private void updateProfile(User user, String imageUrl) {
+		if (StringUtils.hasText(imageUrl)) {
+			user.updateProfile(imageUrl);
+		}
 	}
 
 	public UserInfoResponse getInfo(Long userId) {
