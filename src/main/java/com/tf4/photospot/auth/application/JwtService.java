@@ -43,6 +43,7 @@ public class JwtService {
 		this.key = Keys.hmacShaKeyFor(jwtProperties.getSecretKey().getBytes(StandardCharsets.UTF_8));
 	}
 
+	@Transactional
 	public String issueAccessToken(Long userId, String authorities) {
 		return generateAccessToken(userService.getActiveUser(userId).getId(), authorities, new Date());
 	}
@@ -58,6 +59,7 @@ public class JwtService {
 			.signWith(key).compact();
 	}
 
+	@Transactional
 	public String issueRefreshToken(Long userId) {
 		Long loginUserId = userService.getActiveUser(userId).getId();
 		String token = generateRefreshToken(loginUserId, new Date());
