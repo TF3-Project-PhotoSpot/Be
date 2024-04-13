@@ -10,16 +10,7 @@ include::{snippets}/user-controller-docs-test/get-user-info/response-fields.adoc
 
 '''
 
-include::{snippets}/user-controller-docs-test/update-profile/http-request.adoc[]
-include::{snippets}/user-controller-docs-test/update-profile/request-parts.adoc[]
-include::{snippets}/user-controller-docs-test/update-profile/response-body.adoc[]
-include::{snippets}/user-controller-docs-test/update-profile/response-fields.adoc[]
-
-=== 사용자 닉네임 업데이트
-
-'''
-
-include::{snippets}/user-controller-docs-test/update-nickname/http-request.adoc[]
-include::{snippets}/user-controller-docs-test/update-nickname/request-fields.adoc[]
-include::{snippets}/user-controller-docs-test/update-nickname/response-body.adoc[]
-include::{snippets}/user-controller-docs-test/update-nickname/response-fields.adoc[]
+include::{snippets}/user-controller-docs-test/update-user-info/http-request.adoc[]
+include::{snippets}/user-controller-docs-test/update-user-info/request-parts.adoc[]
+include::{snippets}/user-controller-docs-test/update-user-info/response-body.adoc[]
+include::{snippets}/user-controller-docs-test/update-user-info/response-fields.adoc[]

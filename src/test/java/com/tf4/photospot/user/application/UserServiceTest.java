@@ -6,9 +6,7 @@ import static org.junit.jupiter.api.DynamicTest.*;
 
 import java.util.stream.Stream;
 
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DynamicTest;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestFactory;
 
 import com.tf4.photospot.global.exception.ApiException;
@@ -23,36 +21,41 @@ public class UserServiceTest extends IntegrationTestSupport {
 	private final UserService userService;
 	private final UserRepository userRepository;
 
-	@Test
-	@DisplayName("사용자의 프로필 사진을 업데이트 한다.")
-	void updateProfile() {
-		// given
-		var user = createUser("nickname", "123456", "kakao");
-		var userId = userRepository.save(user).getId();
-		var imageUrl = "https://bucket.s3.ap-northeast-2.amazonaws.com/profile/example.webp";
-
-		// when
-		userService.updateProfile(userId, imageUrl);
-
-		// then
-		assertThat(userRepository.findById(userId).orElseThrow().getProfileUrl()).isEqualTo(imageUrl);
-	}
-
 	@TestFactory
-	Stream<DynamicTest> updateNickname() {
-		var user = createUser("original", "123456", "kakao");
-		var otherUser = createUser("사용자", "456789", "apple");
+	Stream<DynamicTest> updateUserInfo() {
+		var user = createUser("nickname", "123456", "kakao");
+		user.updateProfile("https://bucket.s3.ap-northeast-2.amazonaws.com/profile/example.webp");
 		var userId = userRepository.save(user).getId();
-		userRepository.save(otherUser);
+		createUser("중복닉네임", "456789", "apple");
+
 		return Stream.of(
-			dynamicTest("유효한 닉네임으로 변경 성공한다.", () -> {
-				String nickname = "renewal";
-				userService.updateNickname(userId, nickname);
-				assertThat(user.getNickname()).isEqualTo("renewal");
+			dynamicTest("닉네임만 변경하는 경우 프로필 사진은 그대로 유지한다.", () -> {
+				String newNickname = "새로운_Nickname1";
+				String emptyImageUrl = "";
+				userService.updateUserInfo(userId, emptyImageUrl, newNickname);
+				assertThat(user.getNickname()).isEqualTo(newNickname);
+				assertThat(user.getProfileUrl()).isEqualTo(
+					"https://bucket.s3.ap-northeast-2.amazonaws.com/profile/example.webp");
 			}),
-			dynamicTest("중복 닉네임으로 변경 시 예외를 던진다.", () -> {
-				String nickname = "사용자";
-				assertThatThrownBy(() -> userService.updateNickname(userId, nickname))
+			dynamicTest("프로필 사진만 변경하는 경우 닉네임은 그대로 유지한다.", () -> {
+				String newImageUrl = "https://bucket.s3.ap-northeast-2.amazonaws.com/profile/newExample.webp";
+				String emptyNickname = "";
+				userService.updateUserInfo(userId, newImageUrl, emptyNickname);
+				assertThat(user.getNickname()).isEqualTo("새로운_Nickname1");
+				assertThat(user.getProfileUrl()).isEqualTo(newImageUrl);
+			}),
+			dynamicTest("닉네임과 프로필 사진 모두 변경 성공한다.", () -> {
+				String newNickname = "또다른.Nickname1";
+				String newImageUrl = "https://bucket.s3.ap-northeast-2.amazonaws.com/profile/otherExample.webp";
+				userService.updateUserInfo(userId, newImageUrl, newNickname);
+				assertThat(user.getNickname()).isEqualTo(newNickname);
+				assertThat(user.getProfileUrl()).isEqualTo(newImageUrl);
+			}),
+			dynamicTest("중복되는 닉네임으로 변경하는 경우 예외를 던진다.", () -> {
+				String duplicatedNickname = "중복닉네임";
+				String newImageUrl = "https://bucket.s3.ap-northeast-2.amazonaws.com/profile/newExample.webp";
+				userService.updateUserInfo(userId, newImageUrl, duplicatedNickname);
+				assertThatThrownBy(() -> userService.updateUserInfo(userId, newImageUrl, duplicatedNickname))
 					.isInstanceOf(ApiException.class).hasMessage(UserErrorCode.DUPLICATE_NICKNAME.getMessage());
 			})
 		);

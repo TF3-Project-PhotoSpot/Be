@@ -28,7 +28,7 @@ include::{snippets}/auth-controller-docs-test/reissue-token/response-fields.adoc
 
 '''
 
-include::{snippets}/auth-controller-docs-test/unlink-user/http-request.adoc[]
-include::{snippets}/auth-controller-docs-test/unlink-user/request-headers.adoc[]
-include::{snippets}/auth-controller-docs-test/unlink-user/request-fields.adoc[]
-include::{snippets}/auth-controller-docs-test/unlink-user/response-fields.adoc[]
+include::{snippets}/auth-controller-docs-test/withdrawal-user/http-request.adoc[]
+include::{snippets}/auth-controller-docs-test/withdrawal-user/request-headers.adoc[]
+include::{snippets}/auth-controller-docs-test/withdrawal-user/request-fields.adoc[]
+include::{snippets}/auth-controller-docs-test/withdrawal-user/response-fields.adoc[]
