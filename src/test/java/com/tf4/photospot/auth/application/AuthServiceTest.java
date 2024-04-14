@@ -21,7 +21,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.tf4.photospot.auth.application.request.KakaoUnlinkRequest;
 import com.tf4.photospot.auth.application.response.ReissueTokenResponse;
 import com.tf4.photospot.auth.domain.RefreshToken;
 import com.tf4.photospot.auth.infrastructure.JwtRedisRepository;
@@ -161,7 +160,7 @@ public class AuthServiceTest extends IntegrationTestSupport {
 				authService.unlinkAccountFromOauthServer(userId, null);
 				verify(authService, times(1)).unlinkKakaoAccount(any(User.class));
 				verify(kakaoService, times(1)).unlink(anyLong());
-				verify(kakaoClient, times(1)).unlink(anyString(), any(KakaoUnlinkRequest.class));
+				verify(kakaoClient, times(1)).unlink(anyString(), anyString(), anyString());
 			}),
 			dynamicTest("회원탈퇴 시 user 정보를 업데이트하고 JWT 토큰을 무효회한다.", () -> {
 				// given
