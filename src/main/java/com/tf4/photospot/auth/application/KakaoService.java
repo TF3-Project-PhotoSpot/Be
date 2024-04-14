@@ -3,7 +3,6 @@ package com.tf4.photospot.auth.application;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import com.tf4.photospot.auth.application.request.KakaoUnlinkRequest;
 import com.tf4.photospot.auth.application.response.AuthUserInfoDto;
 import com.tf4.photospot.auth.application.response.KakaoTokenInfoResponse;
 import com.tf4.photospot.auth.infrastructure.KakaoClient;
@@ -51,7 +50,7 @@ public class KakaoService {
 	}
 
 	public void unlink(Long account) {
-		kakaoClient.unlink(KAKAO_AK_PREFIX + adminKey, new KakaoUnlinkRequest("user_id", account));
+		kakaoClient.unlink(KAKAO_AK_PREFIX + adminKey, "user_id", String.valueOf(account));
 	}
 
 	public void validateRequest(String requestAdminKey, String requestAppId) {
