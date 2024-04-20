@@ -1,6 +1,7 @@
 package com.tf4.photospot.user.infrastructure;
 
 import static com.tf4.photospot.user.domain.QUser.*;
+import static com.tf4.photospot.user.domain.QUserReport.*;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -38,6 +39,14 @@ public class UserQueryRepository extends QueryDslUtils {
 		return Optional.ofNullable(queryFactory.selectFrom(user)
 			.where(user.id.eq(userId).and(isActive()))
 			.fetchOne());
+	}
+
+	public boolean existsReport(User reporter, User offender) {
+		final Integer exists = queryFactory.selectOne()
+			.from(userReport)
+			.where(userReport.reporter.eq(reporter).and(userReport.offender.eq(offender)))
+			.fetchFirst();
+		return exists != null;
 	}
 
 	private BooleanExpression isActive() {

@@ -83,4 +83,16 @@ public class UserControllerDocsTest extends RestDocsSupport {
 				)
 			));
 	}
+
+	@Test
+	@DisplayName("사용자 신고")
+	void reportUser() throws Exception {
+		willDoNothing().given(userService).reportUser(anyLong(), anyLong());
+
+		mockMvc.perform(post("/api/v1/users/{offenderId}/report", 2L))
+			.andExpect(status().isOk())
+			.andDo(restDocsTemplate(
+				responseFields(fieldWithPath("message").type(JsonFieldType.STRING).description("성공"))
+			));
+	}
 }

@@ -2,10 +2,13 @@ package com.tf4.photospot.user.application;
 
 import static com.tf4.photospot.support.TestFixture.*;
 import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.DynamicTest.*;
 
+import java.util.List;
 import java.util.stream.Stream;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.TestFactory;
 
@@ -13,6 +16,7 @@ import com.tf4.photospot.global.exception.ApiException;
 import com.tf4.photospot.global.exception.domain.UserErrorCode;
 import com.tf4.photospot.support.IntegrationTestSupport;
 import com.tf4.photospot.user.domain.UserRepository;
+import com.tf4.photospot.user.infrastructure.UserQueryRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -20,6 +24,7 @@ import lombok.RequiredArgsConstructor;
 public class UserServiceTest extends IntegrationTestSupport {
 	private final UserService userService;
 	private final UserRepository userRepository;
+	private final UserQueryRepository userQueryRepository;
 
 	@TestFactory
 	Stream<DynamicTest> updateUserInfo() {
@@ -77,6 +82,36 @@ public class UserServiceTest extends IntegrationTestSupport {
 			dynamicTest("존재하지 않는 사용자 정보 조회 시 예외를 던진다.", () -> {
 				assertThatThrownBy(() -> userService.getInfo(100L))
 					.isInstanceOf(ApiException.class).hasMessage(UserErrorCode.NOT_FOUND_USER.getMessage());
+			})
+		);
+	}
+
+	@TestFactory
+	@DisplayName("유저 신고 시나리오")
+	Stream<DynamicTest> reportUser() {
+		var reporter = createUser("신고자");
+		var offender = createUser("악성유저");
+		userRepository.saveAll(List.of(reporter, offender));
+		return Stream.of(
+			dynamicTest("악성 유저를 신고한다.", () -> {
+				// given
+				assertFalse(userQueryRepository.existsReport(reporter, offender));
+
+				// when
+				userService.reportUser(reporter.getId(), offender.getId());
+
+				// then
+				assertTrue(userQueryRepository.existsReport(reporter, offender));
+			}),
+			dynamicTest("이미 신고한 사용자를 다시 신고하면 예외를 던진다.", () -> {
+				// when & then
+				assertThatThrownBy(() -> userService.reportUser(reporter.getId(), offender.getId()))
+					.isInstanceOf(ApiException.class).hasMessage(UserErrorCode.ALREADY_REPORT.getMessage());
+			}),
+			dynamicTest("본인을 신고하면 예외를 던진다.", () -> {
+				// when & then
+				assertThatThrownBy(() -> userService.reportUser(reporter.getId(), reporter.getId()))
+					.isInstanceOf(ApiException.class).hasMessage(UserErrorCode.CAN_NOT_REPORT_ON_YOUR_OWN.getMessage());
 			})
 		);
 	}
