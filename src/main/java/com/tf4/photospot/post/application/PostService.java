@@ -31,11 +31,11 @@ import com.tf4.photospot.post.domain.MentionRepository;
 import com.tf4.photospot.post.domain.Post;
 import com.tf4.photospot.post.domain.PostLike;
 import com.tf4.photospot.post.domain.PostLikeRepository;
+import com.tf4.photospot.post.domain.PostReport;
+import com.tf4.photospot.post.domain.PostReportRepository;
 import com.tf4.photospot.post.domain.PostRepository;
 import com.tf4.photospot.post.domain.PostTag;
 import com.tf4.photospot.post.domain.PostTagRepository;
-import com.tf4.photospot.post.domain.Report;
-import com.tf4.photospot.post.domain.ReportRepository;
 import com.tf4.photospot.post.infrastructure.PostJdbcRepository;
 import com.tf4.photospot.post.infrastructure.PostQueryRepository;
 import com.tf4.photospot.post.presentation.request.PostUploadRequest;
@@ -62,7 +62,7 @@ public class PostService {
 	private final SpotRepository spotRepository;
 	private final PostLikeRepository postLikeRepository;
 	private final S3Uploader s3Uploader;
-	private final ReportRepository reportRepository;
+	private final PostReportRepository postReportRepository;
 	private final UserService userService;
 
 	public SlicePageDto<PostDetailResponse> getPosts(PostSearchCondition postSearchCond) {
@@ -211,19 +211,23 @@ public class PostService {
 	public void report(Long userId, Long postId, String reason) {
 		User reporter = userService.getActiveUser(userId);
 		Post post = findPost(postId);
-		if (postQueryRepository.existsReport(post, reporter)) {
-			throw new ApiException(PostErrorCode.ALREADY_REPORT);
-		}
-		if (post.isWriter(reporter)) {
-			throw new ApiException(PostErrorCode.CNA_NOT_REPORT_OWN_POST);
-		}
-		Report report = post.reportFrom(reporter, reason);
-		reportRepository.save(report);
+		validReport(post, reporter);
+		PostReport postReport = post.reportFrom(reporter, reason);
+		postReportRepository.save(postReport);
 	}
 
 	private Post findPost(Long postId) {
 		return postRepository.findById(postId)
 			.orElseThrow(() -> new ApiException(PostErrorCode.NOT_FOUND_POST));
+	}
+
+	private void validReport(Post post, User reporter) {
+		if (postQueryRepository.existsReport(post, reporter)) {
+			throw new ApiException(PostErrorCode.ALREADY_REPORT);
+		}
+		if (post.isWriter(reporter)) {
+			throw new ApiException(PostErrorCode.CAN_NOT_REPORT_OWN_POST);
+		}
 	}
 
 	public Optional<String> getFirstPostImage(PostSearchCondition postSearchCond) {
