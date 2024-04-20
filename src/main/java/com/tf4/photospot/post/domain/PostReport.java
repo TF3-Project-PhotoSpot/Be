@@ -20,9 +20,9 @@ import lombok.NoArgsConstructor;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(
-	indexes = @Index(name = "report_unique_idx", columnList = "user_id, post_id", unique = true)
+	indexes = @Index(name = "post_report_unique_idx", columnList = "user_id, post_id", unique = true)
 )
-public class Report extends BaseEntity {
+public class PostReport extends BaseEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
@@ -38,7 +38,7 @@ public class Report extends BaseEntity {
 	private String reason;
 
 	@Builder
-	public Report(User reporter, Post post, String reason) {
+	public PostReport(User reporter, Post post, String reason) {
 		this.reporter = reporter;
 		this.post = post;
 		this.reason = reason;

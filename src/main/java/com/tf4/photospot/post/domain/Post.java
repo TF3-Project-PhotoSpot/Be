@@ -107,8 +107,8 @@ public class Post extends BaseEntity {
 		}
 	}
 
-	public Report reportFrom(User reporter, String reason) {
-		return new Report(reporter, this, reason);
+	public PostReport reportFrom(User reporter, String reason) {
+		return new PostReport(reporter, this, reason);
 	}
 
 	public String getPhotoUrl() {

@@ -39,11 +39,11 @@ import com.tf4.photospot.post.domain.MentionRepository;
 import com.tf4.photospot.post.domain.Post;
 import com.tf4.photospot.post.domain.PostLike;
 import com.tf4.photospot.post.domain.PostLikeRepository;
+import com.tf4.photospot.post.domain.PostReport;
+import com.tf4.photospot.post.domain.PostReportRepository;
 import com.tf4.photospot.post.domain.PostRepository;
 import com.tf4.photospot.post.domain.PostTag;
 import com.tf4.photospot.post.domain.PostTagRepository;
-import com.tf4.photospot.post.domain.Report;
-import com.tf4.photospot.post.domain.ReportRepository;
 import com.tf4.photospot.post.domain.Tag;
 import com.tf4.photospot.post.domain.TagRepository;
 import com.tf4.photospot.post.presentation.request.BubbleInfoDto;
@@ -71,7 +71,7 @@ class PostServiceTest extends IntegrationTestSupport {
 	private final PostTagRepository postTagRepository;
 	private final TagRepository tagRepository;
 	private final MentionRepository mentionRepository;
-	private final ReportRepository reportRepository;
+	private final PostReportRepository postReportRepository;
 	private final EntityManager em;
 
 	@DisplayName("방명록 좋아요")
@@ -165,7 +165,7 @@ class PostServiceTest extends IntegrationTestSupport {
 			Post reportedPost = createPost(spot, writer);
 			deletePost.delete(writer);
 			postRepository.saveAll(List.of(privatePost, deletePost, reportedPost));
-			reportRepository.save(reportedPost.reportFrom(reader, "불쾌한 사진"));
+			postReportRepository.save(reportedPost.reportFrom(reader, "불쾌한 사진"));
 
 			var latestPostRequest = PostSearchCondition.builder()
 				.spotId(spot.getId())
@@ -253,7 +253,7 @@ class PostServiceTest extends IntegrationTestSupport {
 			int postLikeCount = 5;
 			List<Post> likedPosts = posts.subList(0, postLikeCount);
 			likedPosts.forEach(post -> postLikeRepository.save(createPostLike(post, user)));
-			reportRepository.save(likedPosts.get(0).reportFrom(user, "불쾌한 사진"));
+			postReportRepository.save(likedPosts.get(0).reportFrom(user, "불쾌한 사진"));
 			final PostSearchCondition postSearchCondition = PostSearchCondition.builder()
 				.userId(user.getId())
 				.type(PostSearchType.LIKE_POSTS)
@@ -473,7 +473,7 @@ class PostServiceTest extends IntegrationTestSupport {
 			final PostLike likedAndDeletedPost = postLikeRepository.save(createPostLike(posts.get(1), reader));
 			final PostLike likedAndReportedPost = postLikeRepository.save(createPostLike(posts.get(2), reader));
 			likedAndDeletedPost.getPost().delete(writer);
-			reportRepository.save(likedAndReportedPost.getPost().reportFrom(reader, "불쾌한 사진"));
+			postReportRepository.save(likedAndReportedPost.getPost().reportFrom(reader, "불쾌한 사진"));
 			final PostSearchCondition searchCondition = PostSearchCondition.builder()
 				.userId(reader.getId())
 				.type(PostSearchType.LIKE_POSTS)
@@ -711,12 +711,12 @@ class PostServiceTest extends IntegrationTestSupport {
 			dynamicTest("방명록을 신고한다.", () -> {
 				// when
 				postService.report(reporter.getId(), post.getId(), "불쾌감을 유발하는 사진입니다.");
-				Report report = reportRepository.findByPostId(post.getId()).orElseThrow();
+				PostReport postReport = postReportRepository.findByPostId(post.getId()).orElseThrow();
 
 				// then
 				assertAll(
-					() -> assertEquals(report.getReporter(), reporter),
-					() -> assertEquals(report.getReason(), "불쾌감을 유발하는 사진입니다.")
+					() -> assertEquals(postReport.getReporter(), reporter),
+					() -> assertEquals(postReport.getReason(), "불쾌감을 유발하는 사진입니다.")
 				);
 			}),
 			dynamicTest("이미 신고한 방명록인 경우 예외를 던진다.", () -> {
@@ -727,7 +727,7 @@ class PostServiceTest extends IntegrationTestSupport {
 			dynamicTest("본인이 작성한 방명록을 신고하는 경우 예외를 던진다.", () -> {
 				// when & then
 				assertThatThrownBy(() -> postService.report(post.getWriter().getId(), post.getId(), "이상한 사진입니다."))
-					.isInstanceOf(ApiException.class).hasMessage(PostErrorCode.CNA_NOT_REPORT_OWN_POST.getMessage());
+					.isInstanceOf(ApiException.class).hasMessage(PostErrorCode.CAN_NOT_REPORT_OWN_POST.getMessage());
 			})
 		);
 	}
