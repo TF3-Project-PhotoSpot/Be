@@ -14,3 +14,11 @@ include::{snippets}/user-controller-docs-test/update-user-info/http-request.adoc
 include::{snippets}/user-controller-docs-test/update-user-info/request-parts.adoc[]
 include::{snippets}/user-controller-docs-test/update-user-info/response-body.adoc[]
 include::{snippets}/user-controller-docs-test/update-user-info/response-fields.adoc[]
+
+=== 유저 신고
+
+'''
+
+include::{snippets}/user-controller-docs-test/report-user/http-request.adoc[]
+include::{snippets}/user-controller-docs-test/report-user/response-body.adoc[]
+include::{snippets}/user-controller-docs-test/report-user/response-fields.adoc[]

@@ -2,12 +2,15 @@ package com.tf4.photospot.user.presentation;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.tf4.photospot.global.argument.AuthUserId;
+import com.tf4.photospot.global.dto.ApiResponse;
 import com.tf4.photospot.photo.application.S3Uploader;
 import com.tf4.photospot.photo.domain.S3Directory;
 import com.tf4.photospot.user.application.UserService;
@@ -41,5 +44,13 @@ public class UserController {
 	@GetMapping("/me")
 	public UserInfoResponse getUserInfo(@AuthUserId Long userId) {
 		return userService.getInfo(userId);
+	}
+
+	@PostMapping("/{offenderId}/report")
+	public ApiResponse reportUser(
+		@AuthUserId Long userId,
+		@PathVariable(name = "offenderId") Long offenderId) {
+		userService.reportUser(userId, offenderId);
+		return ApiResponse.SUCCESS;
 	}
 }

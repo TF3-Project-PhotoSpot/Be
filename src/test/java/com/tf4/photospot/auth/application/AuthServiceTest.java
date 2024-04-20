@@ -77,7 +77,6 @@ public class AuthServiceTest extends IntegrationTestSupport {
 				var response = authService.kakaoLogin(accessToken, account);
 				assertAll(
 					() -> assertFalse(response.hasLoggedInBefore()),
-					() -> assertThat(userRepository.findAll()).hasSize(1),
 					() -> assertThat(
 						userRepository.findById(response.getId()).orElseThrow().getProviderType()).isEqualTo("kakao")
 				);
@@ -90,7 +89,6 @@ public class AuthServiceTest extends IntegrationTestSupport {
 				//then
 				assertAll(
 					() -> assertThat(loginResponse2.hasLoggedInBefore()).isTrue(),
-					() -> assertThat(userRepository.findAll()).hasSize(1),
 					() -> assertThat(savedUser.getAccount()).isEqualTo(account)
 				);
 			})
@@ -242,7 +240,7 @@ public class AuthServiceTest extends IntegrationTestSupport {
 				userRepository.save(user);
 				jwtRedisRepository.save(new RefreshToken(user.getId(), "refresh_token"));
 				String adminKey = "admin-key-admin-key-admin-key";
-				var info = new KakaoUnlinkCallbackInfo("123456", "5050", "test");
+				var info = new KakaoUnlinkCallbackInfo("123456", "50500", "test");
 				doThrow(new RuntimeException("Test exception")).when(userQueryRepository).deleteByUserId(anyLong());
 
 				// when

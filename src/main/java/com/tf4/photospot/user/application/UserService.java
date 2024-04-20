@@ -8,6 +8,8 @@ import com.tf4.photospot.global.exception.ApiException;
 import com.tf4.photospot.global.exception.domain.UserErrorCode;
 import com.tf4.photospot.user.application.response.UserInfoResponse;
 import com.tf4.photospot.user.domain.User;
+import com.tf4.photospot.user.domain.UserReport;
+import com.tf4.photospot.user.domain.UserReportRepository;
 import com.tf4.photospot.user.domain.UserRepository;
 import com.tf4.photospot.user.infrastructure.UserQueryRepository;
 
@@ -20,6 +22,7 @@ public class UserService {
 
 	private final UserQueryRepository userQueryRepository;
 	private final UserRepository userRepository;
+	private final UserReportRepository userReportRepository;
 
 	@Transactional
 	public UserInfoResponse updateUserInfo(Long userId, String imageUrl, String nickname) {
@@ -47,6 +50,24 @@ public class UserService {
 	private void updateProfile(User user, String imageUrl) {
 		if (StringUtils.hasText(imageUrl)) {
 			user.updateProfile(imageUrl);
+		}
+	}
+
+	@Transactional
+	public void reportUser(Long reporterId, Long offenderId) {
+		User reporter = getActiveUser(reporterId);
+		User offender = getActiveUser(offenderId);
+		validReport(reporter, offender);
+		UserReport userReport = offender.reportFrom(reporter);
+		userReportRepository.save(userReport);
+	}
+
+	private void validReport(User reporter, User offender) {
+		if (reporter.isSame(offender.getId())) {
+			throw new ApiException(UserErrorCode.CAN_NOT_REPORT_ON_YOUR_OWN);
+		}
+		if (userQueryRepository.existsReport(reporter, offender)) {
+			throw new ApiException(UserErrorCode.ALREADY_REPORT);
 		}
 	}
 
