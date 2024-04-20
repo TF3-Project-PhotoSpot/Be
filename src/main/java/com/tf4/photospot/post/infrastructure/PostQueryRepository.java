@@ -7,8 +7,8 @@ import static com.tf4.photospot.photo.domain.QPhoto.*;
 import static com.tf4.photospot.post.domain.QMention.*;
 import static com.tf4.photospot.post.domain.QPost.*;
 import static com.tf4.photospot.post.domain.QPostLike.*;
+import static com.tf4.photospot.post.domain.QPostReport.*;
 import static com.tf4.photospot.post.domain.QPostTag.*;
-import static com.tf4.photospot.post.domain.QReport.*;
 import static com.tf4.photospot.spot.domain.QSpot.*;
 
 import java.time.LocalDate;
@@ -59,7 +59,7 @@ public class PostQueryRepository extends QueryDslUtils {
 			))
 			.from(post)
 			.join(post.photo, photo)
-			.leftJoin(report).on(report.post.eq(post).and(report.reporter.id.eq(cond.userId())));
+			.leftJoin(postReport).on(postReport.post.eq(post).and(postReport.reporter.id.eq(cond.userId())));
 		if (searchType == PostSearchType.LIKE_POSTS) {
 			query.join(postLike).on(postLike.post.eq(post));
 		}
@@ -84,7 +84,7 @@ public class PostQueryRepository extends QueryDslUtils {
 			.join(post.writer, writer).fetchJoin()
 			.join(post.photo, photo).fetchJoin()
 			.leftJoin(photo.bubble, bubble).fetchJoin()
-			.leftJoin(report).on(report.post.eq(post).and(report.reporter.id.eq(cond.userId())));
+			.leftJoin(postReport).on(postReport.post.eq(post).and(postReport.reporter.id.eq(cond.userId())));
 		if (searchType == PostSearchType.LIKE_POSTS) {
 			query.join(postLike).on(postLike.post.eq(post));
 		} else {
@@ -165,7 +165,7 @@ public class PostQueryRepository extends QueryDslUtils {
 	}
 
 	private static BooleanExpression isNotReported() {
-		return report.id.isNull();
+		return postReport.id.isNull();
 	}
 
 	private BooleanBuilder equalsPostLike(Long userId) {
@@ -186,8 +186,8 @@ public class PostQueryRepository extends QueryDslUtils {
 
 	public boolean existsReport(Post post, User user) {
 		final Integer exists = queryFactory.selectOne()
-			.from(report)
-			.where(report.post.eq(post).and(report.reporter.eq(user)))
+			.from(postReport)
+			.where(postReport.post.eq(post).and(postReport.reporter.eq(user)))
 			.fetchFirst();
 		return exists != null;
 	}
