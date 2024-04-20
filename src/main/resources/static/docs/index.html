@@ -466,6 +466,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <ul class="sectlevel2">
 <li><a href="#_사용자_정보_조회">사용자 정보 조회</a></li>
 <li><a href="#_사용자_프로필_업데이트">사용자 프로필 업데이트</a></li>
+<li><a href="#_유저_신고">유저 신고</a></li>
 </ul>
 </li>
 <li><a href="#_spot_api">Spot API</a>
@@ -1563,6 +1564,51 @@ Host: localhost:8080</code></pre>
 </table>
 </div>
 </div>
+<div class="sect2">
+<h3 id="_유저_신고"><a class="link" href="#_유저_신고">유저 신고</a></h3>
+<hr>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /api/v1/users/2/report HTTP/1.1
+Host: localhost:8080
+Content-Type: application/x-www-form-urlencoded</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-json hljs" data-lang="json">{
+  "message" : "성공"
+}</code></pre>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_response_fields_8"><a class="link" href="#_response_fields_8">Response Fields</a></h4>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Path</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Default</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>message</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">성공</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 </div>
 <div class="sect1">
@@ -1637,7 +1683,7 @@ Host: localhost:8080</code></pre>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_response_fields_8"><a class="link" href="#_response_fields_8">Response Fields</a></h4>
+<h4 id="_response_fields_9"><a class="link" href="#_response_fields_9">Response Fields</a></h4>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 25%;">
@@ -1772,7 +1818,7 @@ Host: localhost:8080</code></pre>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_response_fields_9"><a class="link" href="#_response_fields_9">Response Fields</a></h4>
+<h4 id="_response_fields_10"><a class="link" href="#_response_fields_10">Response Fields</a></h4>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 25%;">
@@ -1963,7 +2009,7 @@ Host: localhost:8080</code></pre>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_response_fields_10"><a class="link" href="#_response_fields_10">Response Fields</a></h4>
+<h4 id="_response_fields_11"><a class="link" href="#_response_fields_11">Response Fields</a></h4>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 25%;">
@@ -2090,7 +2136,7 @@ Host: localhost:8080</code></pre>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_response_fields_11"><a class="link" href="#_response_fields_11">Response Fields</a></h4>
+<h4 id="_response_fields_12"><a class="link" href="#_response_fields_12">Response Fields</a></h4>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 25%;">
@@ -2203,7 +2249,7 @@ Host: localhost:8080</code></pre>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_response_fields_12"><a class="link" href="#_response_fields_12">Response Fields</a></h4>
+<h4 id="_response_fields_13"><a class="link" href="#_response_fields_13">Response Fields</a></h4>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 25%;">
@@ -2309,7 +2355,7 @@ Content-Type: image/webp
 </div>
 </div>
 <div class="sect3">
-<h4 id="_response_fields_13"><a class="link" href="#_response_fields_13">Response Fields</a></h4>
+<h4 id="_response_fields_14"><a class="link" href="#_response_fields_14">Response Fields</a></h4>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 25%;">
@@ -2414,7 +2460,7 @@ Host: localhost:8080</code></pre>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_response_fields_14"><a class="link" href="#_response_fields_14">Response Fields</a></h4>
+<h4 id="_response_fields_15"><a class="link" href="#_response_fields_15">Response Fields</a></h4>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 25%;">
@@ -2553,7 +2599,7 @@ Host: localhost:8080</code></pre>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_response_fields_15"><a class="link" href="#_response_fields_15">Response Fields</a></h4>
+<h4 id="_response_fields_16"><a class="link" href="#_response_fields_16">Response Fields</a></h4>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 25%;">
@@ -2765,7 +2811,7 @@ Host: localhost:8080</code></pre>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_response_fields_16"><a class="link" href="#_response_fields_16">Response Fields</a></h4>
+<h4 id="_response_fields_17"><a class="link" href="#_response_fields_17">Response Fields</a></h4>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 25%;">
@@ -2896,7 +2942,7 @@ Host: localhost:8080</code></pre>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_response_fields_17"><a class="link" href="#_response_fields_17">Response Fields</a></h4>
+<h4 id="_response_fields_18"><a class="link" href="#_response_fields_18">Response Fields</a></h4>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 25%;">
@@ -3061,7 +3107,7 @@ Content-Type: application/x-www-form-urlencoded</code></pre>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_response_fields_18"><a class="link" href="#_response_fields_18">Response Fields</a></h4>
+<h4 id="_response_fields_19"><a class="link" href="#_response_fields_19">Response Fields</a></h4>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 25%;">
@@ -3105,7 +3151,7 @@ Host: localhost:8080</code></pre>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_response_fields_19"><a class="link" href="#_response_fields_19">Response Fields</a></h4>
+<h4 id="_response_fields_20"><a class="link" href="#_response_fields_20">Response Fields</a></h4>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 25%;">
@@ -3197,7 +3243,7 @@ Host: localhost:8080</code></pre>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_response_fields_20"><a class="link" href="#_response_fields_20">Response Fields</a></h4>
+<h4 id="_response_fields_21"><a class="link" href="#_response_fields_21">Response Fields</a></h4>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 25%;">
@@ -3328,7 +3374,7 @@ Host: localhost:8080</code></pre>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_response_fields_21"><a class="link" href="#_response_fields_21">Response Fields</a></h4>
+<h4 id="_response_fields_22"><a class="link" href="#_response_fields_22">Response Fields</a></h4>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 25%;">
@@ -3658,7 +3704,7 @@ Host: localhost:8080
 </div>
 </div>
 <div class="sect3">
-<h4 id="_response_fields_22"><a class="link" href="#_response_fields_22">Response Fields</a></h4>
+<h4 id="_response_fields_23"><a class="link" href="#_response_fields_23">Response Fields</a></h4>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 25%;">
@@ -3757,7 +3803,7 @@ Host: localhost:8080
 </div>
 </div>
 <div class="sect3">
-<h4 id="_response_fields_23"><a class="link" href="#_response_fields_23">Response Fields</a></h4>
+<h4 id="_response_fields_24"><a class="link" href="#_response_fields_24">Response Fields</a></h4>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 25%;">
@@ -3842,7 +3888,7 @@ Host: localhost:8080
 </div>
 </div>
 <div class="sect3">
-<h4 id="_response_fields_24"><a class="link" href="#_response_fields_24">Response Fields</a></h4>
+<h4 id="_response_fields_25"><a class="link" href="#_response_fields_25">Response Fields</a></h4>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 25%;">
@@ -3892,7 +3938,7 @@ Host: localhost:8080</code></pre>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_response_fields_25"><a class="link" href="#_response_fields_25">Response Fields</a></h4>
+<h4 id="_response_fields_26"><a class="link" href="#_response_fields_26">Response Fields</a></h4>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 25%;">
@@ -3944,7 +3990,7 @@ Host: localhost:8080</code></pre>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_response_fields_26"><a class="link" href="#_response_fields_26">Response Fields</a></h4>
+<h4 id="_response_fields_27"><a class="link" href="#_response_fields_27">Response Fields</a></h4>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 25%;">
@@ -4013,7 +4059,7 @@ Host: localhost:8080
 </div>
 </div>
 <div class="sect3">
-<h4 id="_response_fields_27"><a class="link" href="#_response_fields_27">Response Fields</a></h4>
+<h4 id="_response_fields_28"><a class="link" href="#_response_fields_28">Response Fields</a></h4>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 25%;">
@@ -4110,7 +4156,7 @@ Host: localhost:8080</code></pre>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_response_fields_28"><a class="link" href="#_response_fields_28">Response Fields</a></h4>
+<h4 id="_response_fields_29"><a class="link" href="#_response_fields_29">Response Fields</a></h4>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 25%;">
@@ -4237,7 +4283,7 @@ Host: localhost:8080</code></pre>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_response_fields_29"><a class="link" href="#_response_fields_29">Response Fields</a></h4>
+<h4 id="_response_fields_30"><a class="link" href="#_response_fields_30">Response Fields</a></h4>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 25%;">
@@ -4368,7 +4414,7 @@ Host: localhost:8080</code></pre>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_response_fields_30"><a class="link" href="#_response_fields_30">Response Fields</a></h4>
+<h4 id="_response_fields_31"><a class="link" href="#_response_fields_31">Response Fields</a></h4>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 25%;">
@@ -4539,7 +4585,7 @@ Host: localhost:8080
 </div>
 </div>
 <div class="sect3">
-<h4 id="_response_fields_31"><a class="link" href="#_response_fields_31">Response Fields</a></h4>
+<h4 id="_response_fields_32"><a class="link" href="#_response_fields_32">Response Fields</a></h4>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 25%;">
@@ -4590,7 +4636,7 @@ Host: localhost:8080
 </div>
 </div>
 <div class="sect3">
-<h4 id="_response_fields_32"><a class="link" href="#_response_fields_32">Response Fields</a></h4>
+<h4 id="_response_fields_33"><a class="link" href="#_response_fields_33">Response Fields</a></h4>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 25%;">
@@ -4709,7 +4755,7 @@ Host: localhost:8080</code></pre>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_response_fields_33"><a class="link" href="#_response_fields_33">Response Fields</a></h4>
+<h4 id="_response_fields_34"><a class="link" href="#_response_fields_34">Response Fields</a></h4>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 25%;">
@@ -4797,7 +4843,7 @@ Host: localhost:8080
 </div>
 </div>
 <div class="sect3">
-<h4 id="_response_fields_34"><a class="link" href="#_response_fields_34">Response Fields</a></h4>
+<h4 id="_response_fields_35"><a class="link" href="#_response_fields_35">Response Fields</a></h4>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 25%;">
@@ -4850,7 +4896,7 @@ Host: localhost:8080
 </div>
 </div>
 <div class="sect3">
-<h4 id="_response_fields_35"><a class="link" href="#_response_fields_35">Response Fields</a></h4>
+<h4 id="_response_fields_36"><a class="link" href="#_response_fields_36">Response Fields</a></h4>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 25%;">
@@ -4945,7 +4991,7 @@ Host: localhost:8080</code></pre>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_response_fields_36"><a class="link" href="#_response_fields_36">Response Fields</a></h4>
+<h4 id="_response_fields_37"><a class="link" href="#_response_fields_37">Response Fields</a></h4>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 25%;">
@@ -5032,7 +5078,7 @@ Host: localhost:8080</code></pre>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_response_fields_37"><a class="link" href="#_response_fields_37">Response Fields</a></h4>
+<h4 id="_response_fields_38"><a class="link" href="#_response_fields_38">Response Fields</a></h4>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 25%;">
@@ -5119,7 +5165,7 @@ Host: localhost:8080
 </div>
 </div>
 <div class="sect3">
-<h4 id="_response_fields_38"><a class="link" href="#_response_fields_38">Response Fields</a></h4>
+<h4 id="_response_fields_39"><a class="link" href="#_response_fields_39">Response Fields</a></h4>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 25%;">
@@ -5163,7 +5209,7 @@ Host: localhost:8080</code></pre>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_response_fields_39"><a class="link" href="#_response_fields_39">Response Fields</a></h4>
+<h4 id="_response_fields_40"><a class="link" href="#_response_fields_40">Response Fields</a></h4>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 25%;">
@@ -5236,7 +5282,7 @@ Host: localhost:8080</code></pre>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_response_fields_40"><a class="link" href="#_response_fields_40">Response Fields</a></h4>
+<h4 id="_response_fields_41"><a class="link" href="#_response_fields_41">Response Fields</a></h4>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 25%;">
