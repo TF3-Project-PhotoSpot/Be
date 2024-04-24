@@ -1,19 +1,30 @@
 package com.tf4.photospot.auth.application.request;
 
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
-import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 
-@JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
-public record AppleRefreshTokenRequest(
-	String clientId,
-	String clientSecret,
-	String code,
-	String grantType,
-	String redirectUri
-) {
-	@Builder
-	public AppleRefreshTokenRequest {
+@Getter
+@Setter
+public class AppleRefreshTokenRequest {
+	private String clientId;
+	private String clientSecret;
+	private String code;
+
+	public AppleRefreshTokenRequest(String clientId, String clientSecret, String code) {
+		this.clientId = clientId;
+		this.clientSecret = clientSecret;
+		this.code = code;
+	}
+
+	public MultiValueMap<String, String> toMultiValueMap() {
+		MultiValueMap<String, String> request = new LinkedMultiValueMap<>();
+		request.add("client_id", clientId);
+		request.add("client_secret", clientSecret);
+		request.add("code", code);
+		request.add("grant_type", "authorization_code");
+		return request;
 	}
 }
