@@ -11,6 +11,7 @@ import org.springframework.util.StringUtils;
 
 import com.tf4.photospot.global.exception.ApiException;
 import com.tf4.photospot.global.exception.domain.AuthErrorCode;
+import com.tf4.photospot.global.exception.domain.DetailApiException;
 
 public class KeyParser {
 	public static PrivateKey getPrivateKey(String key) {
@@ -23,7 +24,7 @@ public class KeyParser {
 			PrivateKeyInfo object = (PrivateKeyInfo)pemParser.readObject();
 			return converter.getPrivateKey(object);
 		} catch (IOException ex) {
-			throw new ApiException(AuthErrorCode.INVALID_PRIVATE_KEY);
+			throw new DetailApiException(AuthErrorCode.INVALID_PRIVATE_KEY, ex);
 		}
 	}
 

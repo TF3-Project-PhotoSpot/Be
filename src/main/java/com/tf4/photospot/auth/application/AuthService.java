@@ -113,7 +113,7 @@ public class AuthService {
 
 	public void unlinkAppleAccount(String authorizationCode) {
 		if (!StringUtils.hasText(authorizationCode)) {
-			throw new ApiException(AuthErrorCode.INVALID_APPLE_AUTHORIZATION_CODE);
+			throw new ApiException(AuthErrorCode.EMPTY_APPLE_AUTHORIZATION_CODE);
 		}
 		appleService.unlink(authorizationCode);
 	}

@@ -10,6 +10,11 @@ import lombok.RequiredArgsConstructor;
 public class ApiException extends RuntimeException {
 	private final ApiErrorCode errorCode;
 
+	public ApiException(ApiErrorCode errorCode, Throwable cause) {
+		super(errorCode.getMessage(), cause);
+		this.errorCode = errorCode;
+	}
+
 	public HttpStatusCode getStatusCode() {
 		return errorCode.getStatusCode();
 	}

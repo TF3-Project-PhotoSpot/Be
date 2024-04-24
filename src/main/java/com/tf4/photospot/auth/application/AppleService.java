@@ -28,6 +28,7 @@ import com.tf4.photospot.auth.infrastructure.AppleClient;
 import com.tf4.photospot.auth.util.KeyParser;
 import com.tf4.photospot.global.exception.ApiException;
 import com.tf4.photospot.global.exception.domain.AuthErrorCode;
+import com.tf4.photospot.global.exception.domain.DetailApiException;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -64,7 +65,7 @@ public class AppleService {
 	}
 
 	public Claims getAppleClaims(String identifyToken) {
-		Map<String, String> tokenHeaders = newParseHeaders(identifyToken);
+		Map<String, String> tokenHeaders = parseHeaders(identifyToken);
 		PublicKey publicKey = generatePublicKey(tokenHeaders, appleClient.getPublicKey());
 		return Jwts.parserBuilder()
 			.setSigningKey(publicKey)
@@ -73,13 +74,13 @@ public class AppleService {
 			.getBody();
 	}
 
-	public Map<String, String> newParseHeaders(String token) {
+	public Map<String, String> parseHeaders(String token) {
 		try {
 			String header = token.split("\\.")[0];
 			return new ObjectMapper().readValue(decodeHeader(header), new TypeReference<>() {
 			});
 		} catch (JsonProcessingException ex) {
-			throw new ApiException(AuthErrorCode.FAIL_PARSE_HEADER_FROM_APPLE_TOKEN);
+			throw new DetailApiException(AuthErrorCode.FAIL_PARSE_HEADER_FROM_APPLE_TOKEN, ex);
 		}
 	}
 
@@ -92,8 +93,8 @@ public class AppleService {
 			ApplePublicKeyDto publicKey = applePublicKeys.getMatchedKey(tokenHeaders.get("kid"),
 				tokenHeaders.get("alg"));
 			return getPublicKey(publicKey);
-		} catch (Exception exception) {
-			throw new ApiException(AuthErrorCode.FAIL_GENERATE_APPLE_PUBLIC_KEY);
+		} catch (Exception ex) {
+			throw new DetailApiException(AuthErrorCode.FAIL_GENERATE_APPLE_PUBLIC_KEY, ex);
 		}
 	}
 
@@ -131,24 +132,16 @@ public class AppleService {
 	public void unlink(String authorizationCode) {
 		String clientSecret = createClientSecret();
 		String refreshToken = getRefreshToken(authorizationCode, clientSecret);
-		AppleRevokeRequest request = AppleRevokeRequest.builder()
-			.clientId(appleBundleId)
-			.clientSecret(clientSecret)
-			.token(refreshToken)
-			.build();
-		appleClient.revoke(request);
+		AppleRevokeRequest request = new AppleRevokeRequest(appleBundleId, clientSecret, refreshToken);
+		appleClient.revoke(request.toMultiValueMap());
 	}
 
 	private String getRefreshToken(String authorizationCode, String clientSecret) {
-		AppleRefreshTokenRequest request = AppleRefreshTokenRequest.builder()
-			.clientId(appleBundleId)
-			.clientSecret(clientSecret)
-			.code(authorizationCode)
-			.grantType("authorization_code").build();
+		AppleRefreshTokenRequest request = new AppleRefreshTokenRequest(appleBundleId, clientSecret, authorizationCode);
 		try {
-			return appleClient.generateToken(request).getRefreshToken();
+			return appleClient.generateToken(request.toMultiValueMap()).getRefreshToken();
 		} catch (Exception ex) {
-			throw new ApiException(AuthErrorCode.INVALID_APPLE_AUTHORIZATION_CODE);
+			throw new DetailApiException(AuthErrorCode.INVALID_APPLE_AUTHORIZATION_CODE, ex);
 		}
 	}
 
