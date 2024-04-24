@@ -47,8 +47,8 @@ public class AuthService {
 	}
 
 	@Transactional
-	public OauthLoginResponse appleLogin(String identifyToken, String nonce) {
-		return oauthLogin(OauthAttributes.APPLE.getProvider(), validateAndGetAppleUserInfo(identifyToken, nonce));
+	public OauthLoginResponse appleLogin(String token, String nonce) {
+		return oauthLogin(OauthAttributes.APPLE.getProvider(), validateAndGetAppleUserInfo(token, nonce));
 	}
 
 	public OauthLoginResponse oauthLogin(String provider, String account) {
@@ -62,8 +62,8 @@ public class AuthService {
 		return kakaoService.getTokenInfo(accessToken, id).account();
 	}
 
-	private String validateAndGetAppleUserInfo(String identifyToken, String nonce) {
-		return appleService.getTokenInfo(identifyToken, nonce).account();
+	private String validateAndGetAppleUserInfo(String token, String nonce) {
+		return appleService.getTokenInfo(token, nonce).account();
 	}
 
 	private String generateNickname() {
