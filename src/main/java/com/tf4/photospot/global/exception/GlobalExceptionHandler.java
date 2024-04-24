@@ -21,6 +21,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 import com.tf4.photospot.global.dto.ApiResponse;
 import com.tf4.photospot.global.dto.ValidationError;
 import com.tf4.photospot.global.exception.domain.CommonErrorCode;
+import com.tf4.photospot.global.exception.domain.DetailApiException;
 
 import jakarta.annotation.Nullable;
 import jakarta.validation.ConstraintViolationException;
@@ -32,7 +33,12 @@ import lombok.extern.slf4j.Slf4j;
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 	@ExceptionHandler(ApiException.class)
 	public ResponseEntity<Object> handleApiException(ApiException ex) {
-		log.info(ex.getMessage());
+		return createResponse(ex.getErrorCode());
+	}
+
+	@ExceptionHandler(DetailApiException.class)
+	public ResponseEntity<Object> handleDetailApiException(DetailApiException ex) {
+		log.info("{} DETAILS: ", ex.getMessage(), ex.getCause());
 		return createResponse(ex.getErrorCode());
 	}
 
@@ -48,7 +54,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 			.flatMap(Collection::stream)
 			.map(error -> ValidationError.builder().message(error.getDefaultMessage()).build())
 			.toList();
-		log.info("ERRORS : {}", errorMessages);
 		return createResponse(CommonErrorCode.INVALID_PARAMETER, errorMessages);
 	}
 
@@ -69,7 +74,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
 	@ExceptionHandler(IllegalArgumentException.class)
 	public ResponseEntity<Object> handleIllegalArgumentException(IllegalArgumentException ex) {
-		log.info(ex.getMessage());
 		return createResponse(CommonErrorCode.INVALID_PARAMETER);
 	}
 
@@ -77,7 +81,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 	public ResponseEntity<Object> handleConstraintViolationException(
 		ConstraintViolationException ex
 	) {
-		log.info(ex.getMessage());
 		final List<ValidationError> errors = ex.getConstraintViolations().stream()
 			.map(violation -> ValidationError.builder()
 				.field(violation.getPropertyPath().toString())
@@ -92,7 +95,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 	public ResponseEntity<Object> handleMethodArgumentTypeMismatchException(
 		MethodArgumentTypeMismatchException ex
 	) {
-		log.info(ex.getMessage());
 		final ValidationError error = ValidationError.builder()
 			.field(ex.getName())
 			.value(ex.getValue())
@@ -108,7 +110,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 		@NotNull HttpStatusCode status,
 		@NotNull WebRequest request
 	) {
-		log.info(ex.getMessage());
 		return createResponse(CommonErrorCode.MISSING_REQUEST_PARAMETER);
 	}
 
@@ -119,7 +120,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 		@NotNull HttpStatusCode status,
 		@NotNull WebRequest request
 	) {
-		log.info(ex.getMessage());
 		return createResponse(CommonErrorCode.MISSING_REQUEST_PARAMETER);
 	}
 
@@ -131,7 +131,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 		@NotNull HttpStatusCode statusCode,
 		@NotNull WebRequest request
 	) {
-		log.error(ex.getMessage());
 		return createResponse(CommonErrorCode.UNEXPECTED_ERROR);
 	}
 
