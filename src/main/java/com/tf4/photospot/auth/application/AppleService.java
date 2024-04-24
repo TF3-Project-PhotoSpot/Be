@@ -1,6 +1,7 @@
 package com.tf4.photospot.auth.application;
 
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
@@ -15,12 +16,12 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import com.auth0.jwt.JWT;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tf4.photospot.auth.application.request.AppleRefreshTokenRequest;
 import com.tf4.photospot.auth.application.request.AppleRevokeRequest;
+import com.tf4.photospot.auth.application.response.ApplePublicKey;
 import com.tf4.photospot.auth.application.response.ApplePublicKeyResponse;
 import com.tf4.photospot.auth.application.response.AuthUserInfoDto;
 import com.tf4.photospot.auth.infrastructure.AppleClient;
@@ -56,60 +57,63 @@ public class AppleService {
 	private static final String ALG = "alg";
 	private static final String APPLE_ID_SERVER = "https://appleid.apple.com";
 
-	public AuthUserInfoDto getTokenInfo(String identifyToken, String nonce) {
-		Claims claims = getAppleClaims(identifyToken);
+	public AuthUserInfoDto getTokenInfo(String token, String nonce) {
+		Claims claims = getAppleClaims(token);
 		validateClaims(claims, nonce);
 		return new AuthUserInfoDto(claims.getSubject());
 	}
 
 	public Claims getAppleClaims(String identifyToken) {
-		try {
-			Map<String, String> tokenHeaders = parseHeaders(identifyToken);
-			PublicKey publicKey = generatePublicKey(getApplePublicKey(tokenHeaders));
-			return Jwts.parserBuilder()
-				.setSigningKey(publicKey)
-				.build()
-				.parseClaimsJws(identifyToken)
-				.getBody();
-		} catch (NoSuchAlgorithmException | InvalidKeySpecException ex) {
-			throw new ApiException(AuthErrorCode.CRYPTO_KEY_PROCESSING_ERROR);
-		}
+		Map<String, String> tokenHeaders = newParseHeaders(identifyToken);
+		PublicKey publicKey = generatePublicKey(tokenHeaders, appleClient.getPublicKey());
+		return Jwts.parserBuilder()
+			.setSigningKey(publicKey)
+			.build()
+			.parseClaimsJws(identifyToken)
+			.getBody();
 	}
 
-	public Map<String, String> parseHeaders(String token) {
+	public Map<String, String> newParseHeaders(String token) {
 		try {
-			return new ObjectMapper().readValue(JWT.decode(token).getHeader(), new TypeReference<>() {
+			String header = token.split("\\.")[0];
+			return new ObjectMapper().readValue(decodeHeader(header), new TypeReference<>() {
 			});
-		} catch (JsonProcessingException | ArrayIndexOutOfBoundsException ex) {
-			throw new ApiException(AuthErrorCode.INVALID_APPLE_IDENTIFY_TOKEN);
+		} catch (JsonProcessingException ex) {
+			throw new ApiException(AuthErrorCode.FAIL_PARSE_HEADER_FROM_APPLE_TOKEN);
 		}
 	}
 
-	private ApplePublicKeyResponse.Key getApplePublicKey(Map<String, String> headers) {
-		return appleClient.getPublicKey().getMatchedKeyBy(headers.get(KID), headers.get(ALG))
-			.orElseThrow(() -> new ApiException(AuthErrorCode.INVALID_APPLE_IDENTIFY_TOKEN));
+	public String decodeHeader(String token) {
+		return new String(Base64.getDecoder().decode(token), StandardCharsets.UTF_8);
 	}
 
-	private PublicKey generatePublicKey(ApplePublicKeyResponse.Key key) throws
-		NoSuchAlgorithmException,
-		InvalidKeySpecException {
-		byte[] nBytes = Base64.getUrlDecoder().decode(key.getModulus());
-		byte[] eBytes = Base64.getUrlDecoder().decode(key.getExponent());
-
-		BigInteger intN = new BigInteger(1, nBytes);
-		BigInteger intE = new BigInteger(1, eBytes);
-
-		return KeyFactory.getInstance(key.getKty()).generatePublic(new RSAPublicKeySpec(intN, intE));
+	private PublicKey generatePublicKey(Map<String, String> tokenHeaders, ApplePublicKeyResponse applePublicKeys) {
+		try {
+			ApplePublicKey publicKey = applePublicKeys.getMatchedKey(tokenHeaders.get("kid"), tokenHeaders.get("alg"));
+			return getPublicKey(publicKey);
+		} catch (Exception exception) {
+			throw new ApiException(AuthErrorCode.FAIL_GENERATE_APPLE_PUBLIC_KEY);
+		}
 	}
 
+	private PublicKey getPublicKey(ApplePublicKey publicKey) throws NoSuchAlgorithmException, InvalidKeySpecException {
+		byte[] nBytes = Base64.getUrlDecoder().decode(publicKey.n());
+		byte[] eBytes = Base64.getUrlDecoder().decode(publicKey.e());
+
+		RSAPublicKeySpec publicKeySpec = new RSAPublicKeySpec(new BigInteger(1, nBytes), new BigInteger(1, eBytes));
+		KeyFactory keyFactory = KeyFactory.getInstance(publicKey.kty());
+		return keyFactory.generatePublic(publicKeySpec);
+	}
+
+	// TODO : nonce 부분 삭제 여부 결정
 	private void validateClaims(Claims claims, String nonce) {
-		validateValue(claims.get("nonce"), nonce);
+		// validateValue(String.valueOf(claims.get("nonce")), nonce);
 		validateValue(claims.getIssuer(), APPLE_ID_SERVER);
 		validateValue(claims.getAudience(), appleBundleId);
 		validateExpiration(claims.getExpiration());
 	}
 
-	private void validateValue(Object claimValue, Object expectValue) {
+	private void validateValue(String claimValue, String expectValue) {
 		if (!expectValue.equals(claimValue)) {
 			throw new ApiException(AuthErrorCode.INVALID_APPLE_IDENTIFY_TOKEN);
 		}
