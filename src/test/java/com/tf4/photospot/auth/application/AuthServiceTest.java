@@ -253,7 +253,7 @@ public class AuthServiceTest extends IntegrationTestSupport {
 				var authorizationCode = "";
 				assertThatThrownBy(() -> authService.unlinkAppleAccount(authorizationCode))
 					.isInstanceOf(ApiException.class)
-					.hasMessage(AuthErrorCode.INVALID_APPLE_AUTHORIZATION_CODE.getMessage());
+					.hasMessage(AuthErrorCode.EMPTY_APPLE_AUTHORIZATION_CODE.getMessage());
 			}),
 			dynamicTest("애플 계정 끊기 호출을 성공한다.", () -> {
 				var authorizationCode = "authorization_code";
