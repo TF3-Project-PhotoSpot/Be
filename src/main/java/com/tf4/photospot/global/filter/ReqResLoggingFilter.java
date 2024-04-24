@@ -22,7 +22,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@Profile("dev")
+@Profile("local, dev")
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class ReqResLoggingFilter extends OncePerRequestFilter {
 

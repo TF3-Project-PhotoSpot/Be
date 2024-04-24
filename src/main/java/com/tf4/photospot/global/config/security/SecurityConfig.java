@@ -20,6 +20,7 @@ import com.tf4.photospot.global.filter.CustomAuthenticationFilter;
 import com.tf4.photospot.global.filter.CustomExceptionFilter;
 import com.tf4.photospot.global.filter.CustomLogoutFilter;
 import com.tf4.photospot.global.filter.JwtTokenValidatorFilter;
+import com.tf4.photospot.global.filter.ReqResLoggingFilter;
 import com.tf4.photospot.global.filter.details.CustomAuthenticationEntryPoint;
 import com.tf4.photospot.global.filter.details.CustomAuthenticationProvider;
 import com.tf4.photospot.global.filter.details.CustomAuthenticationSuccessHandler;
@@ -50,6 +51,7 @@ public class SecurityConfig {
 			.csrf(csrf -> csrf.csrfTokenRequestHandler(requestHandler)
 				.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
 				.disable())
+			.addFilterBefore(reqResLoggingFilter(), UsernamePasswordAuthenticationFilter.class)
 			.addFilterBefore(customAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
 			.addFilterBefore(new JwtTokenValidatorFilter(jwtService, authService), CustomAuthenticationFilter.class)
 			.addFilterBefore(new CustomLogoutFilter(authService, new ObjectMapper()), JwtTokenValidatorFilter.class)
@@ -80,5 +82,10 @@ public class SecurityConfig {
 	@Bean
 	public CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler() {
 		return new CustomAuthenticationSuccessHandler(jwtService);
+	}
+
+	@Bean
+	public ReqResLoggingFilter reqResLoggingFilter() {
+		return new ReqResLoggingFilter();
 	}
 }
