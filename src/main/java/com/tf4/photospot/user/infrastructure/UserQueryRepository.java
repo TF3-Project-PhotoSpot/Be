@@ -22,12 +22,12 @@ import lombok.RequiredArgsConstructor;
 public class UserQueryRepository extends QueryDslUtils {
 	private final JPAQueryFactory queryFactory;
 
-	private static final String DELETED_USER_ACCOUNT_PREFIX = "deleted_";
+	private static final String DELETED_USER_ACCOUNT_PREFIX = "_deleted_";
 
 	public void deleteByUserId(Long userId) {
 		final long deleted = queryFactory.update(user)
 			.set(user.deletedAt, LocalDateTime.now())
-			.set(user.account, user.account.prepend(DELETED_USER_ACCOUNT_PREFIX))
+			.set(user.account, user.account.prepend(userId + DELETED_USER_ACCOUNT_PREFIX))
 			.where(user.id.eq(userId).and(isActive()))
 			.execute();
 		if (deleted < 0) {
