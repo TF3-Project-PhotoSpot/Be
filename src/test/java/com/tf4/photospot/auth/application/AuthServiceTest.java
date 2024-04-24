@@ -171,7 +171,7 @@ public class AuthServiceTest extends IntegrationTestSupport {
 				// then
 				assertAll(
 					() -> assertNotNull(deletedUser.getDeletedAt()),
-					() -> assertThat(deletedUser.getAccount()).startsWith("deleted_"),
+					() -> assertThat(deletedUser.getAccount()).startsWith(deletedUser.getId() + "_deleted_"),
 					() -> assertThat(jwtRedisRepository.findByUserId(deletedUser.getId())).isEqualTo(Optional.empty()),
 					() -> assertThat(userQueryRepository.findActiveUserById(deletedUser.getId())).isEqualTo(
 						Optional.empty()),
@@ -199,7 +199,7 @@ public class AuthServiceTest extends IntegrationTestSupport {
 				// then
 				assertAll(
 					() -> assertNotNull(deletedUser.getDeletedAt()),
-					() -> assertThat(deletedUser.getAccount()).startsWith("deleted_"),
+					() -> assertThat(deletedUser.getAccount()).startsWith(deletedUser.getId() + "_deleted_"),
 					() -> assertThat(jwtRedisRepository.findByUserId(deletedUser.getId())).isEqualTo(Optional.empty())
 				);
 				verify(slackAlert, times(0)).sendKakaoCallbackFailure(any(Exception.class), anyString(), anyString());
