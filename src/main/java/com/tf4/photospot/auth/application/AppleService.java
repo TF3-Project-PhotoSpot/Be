@@ -21,7 +21,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tf4.photospot.auth.application.request.AppleRefreshTokenRequest;
 import com.tf4.photospot.auth.application.request.AppleRevokeRequest;
-import com.tf4.photospot.auth.application.response.ApplePublicKey;
+import com.tf4.photospot.auth.application.response.ApplePublicKeyDto;
 import com.tf4.photospot.auth.application.response.ApplePublicKeyResponse;
 import com.tf4.photospot.auth.application.response.AuthUserInfoDto;
 import com.tf4.photospot.auth.infrastructure.AppleClient;
@@ -89,14 +89,17 @@ public class AppleService {
 
 	private PublicKey generatePublicKey(Map<String, String> tokenHeaders, ApplePublicKeyResponse applePublicKeys) {
 		try {
-			ApplePublicKey publicKey = applePublicKeys.getMatchedKey(tokenHeaders.get("kid"), tokenHeaders.get("alg"));
+			ApplePublicKeyDto publicKey = applePublicKeys.getMatchedKey(tokenHeaders.get("kid"),
+				tokenHeaders.get("alg"));
 			return getPublicKey(publicKey);
 		} catch (Exception exception) {
 			throw new ApiException(AuthErrorCode.FAIL_GENERATE_APPLE_PUBLIC_KEY);
 		}
 	}
 
-	private PublicKey getPublicKey(ApplePublicKey publicKey) throws NoSuchAlgorithmException, InvalidKeySpecException {
+	private PublicKey getPublicKey(ApplePublicKeyDto publicKey) throws
+		NoSuchAlgorithmException,
+		InvalidKeySpecException {
 		byte[] nBytes = Base64.getUrlDecoder().decode(publicKey.n());
 		byte[] eBytes = Base64.getUrlDecoder().decode(publicKey.e());
 

@@ -1,6 +1,6 @@
 package com.tf4.photospot.auth.application.response;
 
-public record ApplePublicKey(
+public record ApplePublicKeyDto(
 	String kty,
 	String kid,
 	String alg,
