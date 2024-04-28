@@ -188,6 +188,6 @@ public class PostController {
 
 	@GetMapping("/tags")
 	public TagListResponse getTags() {
-		return new TagListResponse(postService.getTags());
+		return TagListResponse.from(postService.getTags());
 	}
 }

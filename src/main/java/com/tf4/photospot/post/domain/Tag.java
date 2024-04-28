@@ -21,11 +21,14 @@ public class Tag extends BaseEntity {
 
 	private String name;
 
+	private TagType tagType = TagType.ETC;
+
 	private String iconUrl;
 
 	@Builder
-	public Tag(String name, String iconUrl) {
+	public Tag(String name, TagType tagType, String iconUrl) {
 		this.name = name;
+		this.tagType = tagType;
 		this.iconUrl = iconUrl;
 	}
 }

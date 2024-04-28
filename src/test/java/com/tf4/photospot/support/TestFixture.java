@@ -22,6 +22,7 @@ import com.tf4.photospot.post.domain.Post;
 import com.tf4.photospot.post.domain.PostLike;
 import com.tf4.photospot.post.domain.PostTag;
 import com.tf4.photospot.post.domain.Tag;
+import com.tf4.photospot.post.domain.TagType;
 import com.tf4.photospot.spot.domain.Spot;
 import com.tf4.photospot.user.domain.User;
 
@@ -157,8 +158,13 @@ public class TestFixture {
 	}
 
 	public static Tag createTag(String tagName) {
+		return createTag(tagName, TagType.ETC);
+	}
+
+	public static Tag createTag(String tagName, TagType tagType) {
 		return Tag.builder()
 			.name(tagName)
+			.tagType(tagType)
 			.iconUrl("iconUrl")
 			.build();
 	}

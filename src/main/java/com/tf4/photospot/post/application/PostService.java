@@ -243,6 +243,7 @@ public class PostService {
 			.map(tag -> TagResponse.builder()
 				.tagId(tag.getId())
 				.tagName(tag.getName())
+				.tagType(tag.getTagType().name())
 				.iconUrl(tag.getIconUrl())
 				.build())
 			.toList();

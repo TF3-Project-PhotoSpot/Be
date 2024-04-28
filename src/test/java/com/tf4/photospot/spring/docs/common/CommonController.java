@@ -24,6 +24,7 @@ import com.tf4.photospot.global.exception.domain.PostErrorCode;
 import com.tf4.photospot.global.exception.domain.S3UploaderErrorCode;
 import com.tf4.photospot.global.exception.domain.SpotErrorCode;
 import com.tf4.photospot.global.exception.domain.UserErrorCode;
+import com.tf4.photospot.post.domain.TagType;
 
 @RequestMapping("/common")
 @RestController
@@ -44,6 +45,11 @@ public class CommonController {
 					new ValidationError("lon", "90", CoordinateValidator.COORD_INVALID_RANGE)))
 				.build()
 			);
+	}
+
+	@GetMapping("/tagTypes")
+	public ResponseEntity<Map<String, List<TagType>>> tagTypes() {
+		return ResponseEntity.ok().body(Map.of("tagType", Arrays.stream(TagType.values()).toList()));
 	}
 
 	@GetMapping("/errorcodes")

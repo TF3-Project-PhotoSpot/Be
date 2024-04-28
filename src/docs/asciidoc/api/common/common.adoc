@@ -12,6 +12,12 @@ include::{snippets}/common-docs-test/common-success/response-body.adoc[]
 include::{snippets}/common-docs-test/common-error/response-fields.adoc[]
 include::{snippets}/common-docs-test/common-error/response-body.adoc[]
 
+=== 태그 타입
+
+'''
+
+include::{snippets}/common-docs-test/tag-types/response-body.adoc[]
+
 === 에러 코드
 
 '''

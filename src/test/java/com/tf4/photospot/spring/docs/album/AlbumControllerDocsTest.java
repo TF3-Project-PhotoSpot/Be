@@ -28,6 +28,7 @@ import com.tf4.photospot.post.application.response.PostDetailResponse;
 import com.tf4.photospot.post.application.response.PostPreviewResponse;
 import com.tf4.photospot.post.application.response.TagResponse;
 import com.tf4.photospot.post.application.response.WriterResponse;
+import com.tf4.photospot.post.domain.TagType;
 import com.tf4.photospot.spring.docs.RestDocsSupport;
 
 public class AlbumControllerDocsTest extends RestDocsSupport {
@@ -83,7 +84,7 @@ public class AlbumControllerDocsTest extends RestDocsSupport {
 			.isLiked(true)
 			.createdAt(LocalDateTime.of(2024, 1, 10, 12, 30))
 			.writer(new WriterResponse(1L, true, "nickname", "profileUrl"))
-			.tags(List.of(new TagResponse(1L, "iconUrl", "tagName")))
+			.tags(List.of(new TagResponse(1L, "iconUrl", TagType.ETC.name(), "tagName")))
 			.build()), false);
 		given(albumService.getPostsOfAlbum(any(PostSearchCondition.class))).willReturn(response);
 		//when
@@ -126,8 +127,9 @@ public class AlbumControllerDocsTest extends RestDocsSupport {
 					fieldWithPath("content[].tags").type(JsonFieldType.ARRAY).description("태그 리스트")
 						.attributes(defaultValue("emptyList")),
 					fieldWithPath("content[].tags[].tagId").type(JsonFieldType.NUMBER).description("태그 ID"),
-					fieldWithPath("content[].tags[].iconUrl").type(JsonFieldType.STRING).description("태그 icon url"),
 					fieldWithPath("content[].tags[].tagName").type(JsonFieldType.STRING).description("태그 이름"),
+					fieldWithPath("content[].tags[].tagType").type(JsonFieldType.STRING).description("태그 타입"),
+					fieldWithPath("content[].tags[].iconUrl").type(JsonFieldType.STRING).description("태그 icon url"),
 					fieldWithPath("hasNext").type(JsonFieldType.BOOLEAN).description("다음 방명록 여부")
 				)));
 	}
