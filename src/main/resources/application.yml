@@ -6,7 +6,7 @@ spring:
     password: ${DB_PASSWORD}
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: create
     properties:
       hibernate:
         defer-datasource-initialization: true
@@ -28,7 +28,9 @@ spring:
       max-request-size: 5MB
   data:
     redis:
-      port: 6379
+      port: ${REDIS_PORT}
+      host: ${REDIS_HOST}
+      password: ${REDIS_PASSWORD}
 
 logging:
   level:
@@ -37,21 +39,21 @@ logging:
 
 kakao:
   rest-api-key: ${KAKAO_MAP_REST_API_KEY}
-  app-id: asdasdasd
-  admin-key: asdadsad
+  app-id: ${KAKAO_APP_ID}
+  admin-key: ${KAKAO_ADMIN_KEY}
 
 apple:
-  client-id: asdasdsa
-  key-id: asdsdasd
-  team-id: asdasd
-  sign-key: adadsad
+  client-id: ${APPLE_CLIENT_ID}
+  key-id: ${APPLE_KEY_ID}
+  team-id: ${APPLE_TEAM_ID}
+  sign-key: ${APPLE_PRIVATE_KEY}
 
 jwt:
   issuer: ${JWT_ISSUER}
   secret_key: ${JWT_SECRET_KEY}
 
 slack:
-  url: aasdasd
+  url: ${SLACK_URL}
 
 ---
 
