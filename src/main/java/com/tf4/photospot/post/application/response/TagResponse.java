@@ -9,6 +9,7 @@ import lombok.Builder;
 public record TagResponse(
 	Long tagId,
 	String iconUrl,
+	String tagType,
 	String tagName
 ) {
 	@Builder
@@ -22,6 +23,7 @@ public record TagResponse(
 		final Tag tag = postTag.getTag();
 		return TagResponse.builder()
 			.tagId(tag.getId())
+			.tagType(tag.getTagType().name())
 			.iconUrl(tag.getIconUrl())
 			.tagName(tag.getName())
 			.build();

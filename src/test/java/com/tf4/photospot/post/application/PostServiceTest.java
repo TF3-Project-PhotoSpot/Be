@@ -46,6 +46,7 @@ import com.tf4.photospot.post.domain.PostTag;
 import com.tf4.photospot.post.domain.PostTagRepository;
 import com.tf4.photospot.post.domain.Tag;
 import com.tf4.photospot.post.domain.TagRepository;
+import com.tf4.photospot.post.domain.TagType;
 import com.tf4.photospot.post.presentation.request.BubbleInfoDto;
 import com.tf4.photospot.post.presentation.request.PhotoInfoDto;
 import com.tf4.photospot.post.presentation.request.PostUpdateHttpRequest;
@@ -688,13 +689,21 @@ class PostServiceTest extends IntegrationTestSupport {
 	@Test
 	void getTags() {
 		//given
-		tagRepository.saveAll(createTags("tag1", "tag2", "tag3"));
+		tagRepository.saveAll(List.of(
+			createTag("tag1", TagType.POSITIVE),
+			createTag("tag2", TagType.NEGATIVE),
+			createTag("tag3", TagType.ETC))
+		);
 		//when
 		final List<TagResponse> tagResponses = postService.getTags();
 		//then
 		assertThat(tagResponses).hasSize(3);
-		assertThat(tagResponses).extracting("tagName")
+		assertThat(tagResponses)
+			.extracting("tagName")
 			.contains("tag1", "tag2", "tag3");
+		assertThat(tagResponses)
+			.extracting("tagType")
+			.contains(TagType.POSITIVE.name(), TagType.NEGATIVE.name(), TagType.ETC.name());
 	}
 
 	@TestFactory

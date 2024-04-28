@@ -27,6 +27,7 @@ import com.tf4.photospot.post.application.response.PostSaveResponse;
 import com.tf4.photospot.post.application.response.PostUpdateResponse;
 import com.tf4.photospot.post.application.response.TagResponse;
 import com.tf4.photospot.post.application.response.WriterResponse;
+import com.tf4.photospot.post.domain.TagType;
 import com.tf4.photospot.post.presentation.PostController;
 import com.tf4.photospot.post.presentation.request.BubbleInfoDto;
 import com.tf4.photospot.post.presentation.request.PhotoInfoDto;
@@ -92,7 +93,7 @@ public class PostControllerDocsTest extends RestDocsSupport {
 			.isLiked(true)
 			.createdAt(LocalDateTime.of(2024, 1, 10, 12, 30))
 			.writer(new WriterResponse(1L, true, "nickname", "profileUrl"))
-			.tags(List.of(new TagResponse(1L, "iconUrl", "tagName")))
+			.tags(List.of(new TagResponse(1L, "iconUrl", TagType.ETC.name(), "tagName")))
 			.build()), false);
 		given(postService.getPosts(any(PostSearchCondition.class))).willReturn(response);
 		//when
@@ -136,8 +137,9 @@ public class PostControllerDocsTest extends RestDocsSupport {
 					fieldWithPath("content[].tags").type(JsonFieldType.ARRAY).description("태그 리스트")
 						.attributes(defaultValue("emptyList")),
 					fieldWithPath("content[].tags[].tagId").type(JsonFieldType.NUMBER).description("태그 ID"),
-					fieldWithPath("content[].tags[].iconUrl").type(JsonFieldType.STRING).description("태그 icon url"),
 					fieldWithPath("content[].tags[].tagName").type(JsonFieldType.STRING).description("태그 이름"),
+					fieldWithPath("content[].tags[].tagType").type(JsonFieldType.STRING).description("태그 타입"),
+					fieldWithPath("content[].tags[].iconUrl").type(JsonFieldType.STRING).description("태그 icon url"),
 					fieldWithPath("hasNext").type(JsonFieldType.BOOLEAN).description("다음 방명록 여부")
 				)));
 	}
@@ -185,7 +187,7 @@ public class PostControllerDocsTest extends RestDocsSupport {
 			.isLiked(true)
 			.createdAt(LocalDateTime.of(2024, 1, 10, 12, 30))
 			.writer(new WriterResponse(1L, true, "nickname", "profileUrl"))
-			.tags(List.of(new TagResponse(1L, "iconUrl", "tagName")))
+			.tags(List.of(new TagResponse(1L, "iconUrl", TagType.ETC.name(), "tagName")))
 			.build()), false);
 		given(postService.getPosts(any(PostSearchCondition.class))).willReturn(response);
 		//when
@@ -227,8 +229,9 @@ public class PostControllerDocsTest extends RestDocsSupport {
 					fieldWithPath("content[].tags").type(JsonFieldType.ARRAY).description("태그 리스트")
 						.attributes(defaultValue("emptyList")),
 					fieldWithPath("content[].tags[].tagId").type(JsonFieldType.NUMBER).description("태그 ID"),
-					fieldWithPath("content[].tags[].iconUrl").type(JsonFieldType.STRING).description("태그 icon url"),
 					fieldWithPath("content[].tags[].tagName").type(JsonFieldType.STRING).description("태그 이름"),
+					fieldWithPath("content[].tags[].tagType").type(JsonFieldType.STRING).description("태그 타입"),
+					fieldWithPath("content[].tags[].iconUrl").type(JsonFieldType.STRING).description("태그 icon url"),
 					fieldWithPath("hasNext").type(JsonFieldType.BOOLEAN).description("다음 방명록 여부")
 				)));
 	}
@@ -276,7 +279,7 @@ public class PostControllerDocsTest extends RestDocsSupport {
 			.isLiked(true)
 			.createdAt(LocalDateTime.of(2024, 1, 10, 12, 30))
 			.writer(new WriterResponse(1L, true, "nickname", "profileUrl"))
-			.tags(List.of(new TagResponse(1L, "iconUrl", "tagName")))
+			.tags(List.of(new TagResponse(1L, "iconUrl", TagType.ETC.name(), "tagName")))
 			.build()), false);
 		given(postService.getPosts(any(PostSearchCondition.class))).willReturn(response);
 		//when
@@ -318,8 +321,9 @@ public class PostControllerDocsTest extends RestDocsSupport {
 					fieldWithPath("content[].tags").type(JsonFieldType.ARRAY).description("태그 리스트")
 						.attributes(defaultValue("emptyList")),
 					fieldWithPath("content[].tags[].tagId").type(JsonFieldType.NUMBER).description("태그 ID"),
-					fieldWithPath("content[].tags[].iconUrl").type(JsonFieldType.STRING).description("태그 icon url"),
+					fieldWithPath("content[].tags[].tagType").type(JsonFieldType.STRING).description("태그 타입"),
 					fieldWithPath("content[].tags[].tagName").type(JsonFieldType.STRING).description("태그 이름"),
+					fieldWithPath("content[].tags[].iconUrl").type(JsonFieldType.STRING).description("태그 icon url"),
 					fieldWithPath("hasNext").type(JsonFieldType.BOOLEAN).description("다음 방명록 여부")
 				)));
 	}
@@ -514,8 +518,8 @@ public class PostControllerDocsTest extends RestDocsSupport {
 	void getTags() throws Exception {
 		// given
 		final List<TagResponse> responses = List.of(
-			TagResponse.builder().tagId(1L).tagName("tag1").iconUrl("iconUrl").build(),
-			TagResponse.builder().tagId(2L).tagName("tag2").iconUrl("iconUrl").build()
+			TagResponse.builder().tagId(1L).tagType(TagType.POSITIVE.name()).tagName("tag1").iconUrl("iconUrl").build(),
+			TagResponse.builder().tagId(2L).tagType(TagType.POSITIVE.name()).tagName("tag2").iconUrl("iconUrl").build()
 		);
 		given(postService.getTags()).willReturn(responses);
 		// when & then
@@ -523,11 +527,11 @@ public class PostControllerDocsTest extends RestDocsSupport {
 			.andExpect(status().isOk())
 			.andDo(restDocsTemplate(
 				responseFields(
-					fieldWithPath("tags").type(JsonFieldType.ARRAY).description("태그 목록"),
-					fieldWithPath("tags[].tagId").type(JsonFieldType.NUMBER).description("태그 id"),
-					fieldWithPath("tags[].iconUrl").type(JsonFieldType.STRING).description("태그 icon url")
-						.attributes(defaultValue("\"\"")),
-					fieldWithPath("tags[].tagName").type(JsonFieldType.STRING).description("태그 이름"))
-			));
+					fieldWithPath("tags.POSITIVE[].tagId").type(JsonFieldType.NUMBER).description("태그 id"),
+					fieldWithPath("tags.POSITIVE[].tagName").type(JsonFieldType.STRING).description("태그 이름"),
+					fieldWithPath("tags.POSITIVE[].tagType").type(JsonFieldType.STRING).description("태그 타입"),
+					fieldWithPath("tags.POSITIVE[].iconUrl").type(JsonFieldType.STRING).description("태그 icon url")
+						.attributes(defaultValue("\"\""))
+				)));
 	}
 }

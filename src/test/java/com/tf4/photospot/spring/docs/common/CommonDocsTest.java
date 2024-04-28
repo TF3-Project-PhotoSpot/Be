@@ -50,6 +50,18 @@ class CommonDocsTest extends RestDocsSupport {
 	}
 
 	@Test
+	void tagTypes() throws Exception {
+		mockMvc.perform(get("/common/tagTypes"))
+			.andExpect(status().isOk())
+			.andDo(restDocsTemplate(
+				responseFields(
+					fieldWithPath("tagType[]").type(JsonFieldType.ARRAY).description("태그 타입 목록")
+				)
+			));
+
+	}
+
+	@Test
 	void commonErrorCodes() throws Exception {
 		mockMvc.perform(get("/common/errorcodes"))
 			.andExpect(status().isOk())
