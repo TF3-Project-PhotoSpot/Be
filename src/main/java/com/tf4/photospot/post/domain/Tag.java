@@ -3,6 +3,8 @@ package com.tf4.photospot.post.domain;
 import com.tf4.photospot.global.entity.BaseEntity;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -21,7 +23,8 @@ public class Tag extends BaseEntity {
 
 	private String name;
 
-	private TagType tagType = TagType.ETC;
+	@Enumerated(EnumType.STRING)
+	private TagType tagType;
 
 	private String iconUrl;
 
