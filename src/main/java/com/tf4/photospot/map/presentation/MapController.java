@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.tf4.photospot.global.dto.CoordinateDto;
 import com.tf4.photospot.global.util.PointConverter;
 import com.tf4.photospot.map.application.MapService;
-import com.tf4.photospot.map.application.response.SearchByAddressResponse;
-import com.tf4.photospot.map.application.response.SearchByCoordResponse;
+import com.tf4.photospot.map.application.response.SearchLocationResponse;
+import com.tf4.photospot.spot.application.SpotService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -18,14 +18,22 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequiredArgsConstructor
 public class MapController {
+	private static final String TEMPORARY_SPOT_ADDRESS = "";
+
 	private final MapService mapService;
+	private final SpotService spotService;
 
 	@GetMapping("/search/location")
-	public SearchByAddressResponse searchLocation(
+	public SearchLocationResponse searchLocation(
 		@ModelAttribute @Valid CoordinateDto coord
 	) {
-		SearchByCoordResponse searchByCoordResponse = mapService.searchByCoord(PointConverter.convert(coord));
-		return mapService.searchByAddress(searchByCoordResponse.address(), searchByCoordResponse.roadAddress());
+		final String address = mapService.searchByCoord(PointConverter.convert(coord));
+		final SearchLocationResponse searchLocationResponse = mapService.searchByAddress(address);
+		if (searchLocationResponse == SearchLocationResponse.ERROR_RESPONSE) {
+			spotService.create(TEMPORARY_SPOT_ADDRESS, PointConverter.convert(coord));
+			return new SearchLocationResponse(address, coord);
+		}
+		return searchLocationResponse;
 	}
 
 }

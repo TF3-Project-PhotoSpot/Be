@@ -1,19 +1,18 @@
 package com.tf4.photospot.map.application;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.DynamicTest.*;
 import static org.mockito.BDDMockito.*;
 
-import java.util.List;
-import java.util.stream.Stream;
-
-import org.junit.jupiter.api.DynamicTest;
-import org.junit.jupiter.api.TestFactory;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.locationtech.jts.geom.Point;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
-import com.tf4.photospot.global.exception.ApiException;
-import com.tf4.photospot.global.exception.domain.MapErrorCode;
-import com.tf4.photospot.map.application.response.kakao.KakaoSearchAddressResponse;
+import com.tf4.photospot.global.dto.CoordinateDto;
+import com.tf4.photospot.global.util.PointConverter;
+import com.tf4.photospot.map.application.response.SearchLocationResponse;
+import com.tf4.photospot.map.application.response.kakao.KakaoCoordToAddressResponse;
+import com.tf4.photospot.map.application.response.kakao.KakaoSearchLocationResponse;
 import com.tf4.photospot.map.infrastructure.KakaoMapClient;
 import com.tf4.photospot.support.IntegrationTestSupport;
 
@@ -22,47 +21,41 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 class MapServiceTest extends IntegrationTestSupport {
 	private final MapService mapService;
+
 	@MockBean
 	private final KakaoMapClient kakaoMapClient;
 
-	@TestFactory
-	Stream<DynamicTest> searchByAddressStreamCountTest() {
+	@DisplayName("좌표로 주소를 찾을 수 없으면 NO_SEARCH_ADDRESS가 반환된다.")
+	@Test
+	void failSearchByCoord() {
 		//given
-		KakaoSearchAddressResponse response = KakaoSearchAddressResponse.builder()
-			.meta(new KakaoSearchAddressResponse.Meta(1, 1, true))
-			.documents(List.of(KakaoSearchAddressResponse.Document.builder()
-				.address(KakaoSearchAddressResponse.Document.Address.builder()
-					.addressName("전북 익산시 부송동 100")
-					.x("126.99597295767953")
-					.y("35.97664845766847").build())
-				.roadAddress(KakaoSearchAddressResponse.Document.RoadAddress.builder()
-					.addressName("전북 익산시 부송동 100")
-					.x("126.99597295767953")
-					.y("35.97664845766847").build()).build())
-			).build();
-		given(kakaoMapClient.searchAddress(anyString())).willReturn(response);
+		final Point coord = PointConverter.convert(new CoordinateDto(127.0, 37.0));
+		given(kakaoMapClient.convertCoordToAddress(anyDouble(), anyDouble()))
+			.willReturn(KakaoCoordToAddressResponse.ERROR_RESPONSE);
+		//when
+		final String result = mapService.searchByCoord(coord);
 
-		return Stream.of(
-			dynamicTest("지번 주소, 도로명 주소가 둘 다 유효하지 않을 경우 kakaoClient는 호출 되지 않는다.", () -> {
-				//when
-				catchException(() -> mapService.searchByAddress(null, ""))
-					.addSuppressed(new ApiException(MapErrorCode.NO_COORD_FOR_GIVEN_ADDRESS));
-				//then
-				verify(kakaoMapClient, times(0)).searchAddress(anyString());
-			}),
-			dynamicTest("지번 주소, 도로명 주소가 둘 다 유효하지 않을 경우 NO_COORD_FOR_GIVEN_ADDRESS 예외가 발생한다", () -> {
-				//when //then
-				assertThatThrownBy(() -> mapService.searchByAddress(null, ""))
-					.isInstanceOf(ApiException.class)
-					.extracting("errorCode")
-					.isEqualTo(MapErrorCode.NO_COORD_FOR_GIVEN_ADDRESS);
-			}),
-			dynamicTest("지번 주소, 도로명 주소가 둘 다 유효할 경우 한번만 호출이 된다", () -> {
-				//when
-				mapService.searchByAddress("전북 익산시 부송동 100", "전북 익산시 부송동 100");
-				//then
-				verify(kakaoMapClient, atMostOnce()).searchAddress(anyString());
-			})
-		);
+		//then
+		assertThat(result).isEqualTo(MapService.NO_SEARCH_ADDRESS);
+	}
+
+	@DisplayName("주소가 유효하지 않으면 ERROR_RESPONSE가 반환된다.")
+	@Test
+	void searchByInvalidAddress() {
+		final SearchLocationResponse result = mapService.searchByAddress(MapService.NO_SEARCH_ADDRESS);
+
+		//then
+		assertThat(result).isNotNull();
+		assertThat(result).isEqualTo(SearchLocationResponse.ERROR_RESPONSE);
+	}
+
+	@DisplayName("주소로 검색한 결과가 없으면 ERROR_RESPONSE가 반환된다.")
+	@Test
+	void failSearchByAddress() {
+		given(kakaoMapClient.searchAddress(anyString())).willReturn(KakaoSearchLocationResponse.ERROR_RESPONSE);
+
+		final SearchLocationResponse result = mapService.searchByAddress("도봉구 마들로");
+
+		assertThat(result).isEqualTo(SearchLocationResponse.ERROR_RESPONSE);
 	}
 }

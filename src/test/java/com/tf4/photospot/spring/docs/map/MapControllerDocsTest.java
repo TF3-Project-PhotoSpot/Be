@@ -13,25 +13,29 @@ import org.springframework.restdocs.payload.JsonFieldType;
 
 import com.tf4.photospot.global.dto.CoordinateDto;
 import com.tf4.photospot.map.application.MapService;
-import com.tf4.photospot.map.application.response.SearchByAddressResponse;
-import com.tf4.photospot.map.application.response.SearchByCoordResponse;
+import com.tf4.photospot.map.application.response.SearchLocationResponse;
 import com.tf4.photospot.map.presentation.MapController;
+import com.tf4.photospot.spot.application.SpotService;
 import com.tf4.photospot.spring.docs.RestDocsSupport;
 
 class MapControllerDocsTest extends RestDocsSupport {
 	private final MapService mapService = mock(MapService.class);
+	private final SpotService spotService = mock(SpotService.class);
 
 	@Override
 	protected Object initController() {
-		return new MapController(mapService);
+		return new MapController(mapService, spotService);
 	}
 
 	@DisplayName("특정 좌표로 지도의 장소를 찾는다.")
 	@Test
 	void findRegisteredSpot() throws Exception {
 		//given
-		given(mapService.searchByCoord(any(Point.class))).willReturn(createSearchByCoordResponse());
-		given(mapService.searchByAddress(anyString(), anyString())).willReturn(createSearchByAddressResponse());
+		given(mapService.searchByCoord(any(Point.class))).willReturn("전북 익산시 부송동 100");
+		given(mapService.searchByAddress(anyString())).willReturn(SearchLocationResponse.builder()
+			.address("전북 익산시 부송동 100")
+			.coord(new CoordinateDto(126.99, 35.97))
+			.build());
 		//when then
 		mockMvc.perform(get("/api/v1/map/search/location")
 				.queryParam("lat", "35.97")
@@ -44,27 +48,8 @@ class MapControllerDocsTest extends RestDocsSupport {
 				),
 				responseFields(
 					fieldWithPath("address").type(JsonFieldType.STRING).description("지번 주소"),
-					fieldWithPath("addressCoord.lat").type(JsonFieldType.NUMBER).description("지번 주소 위도"),
-					fieldWithPath("addressCoord.lon").type(JsonFieldType.NUMBER).description("지번 주소 경도"),
-					fieldWithPath("roadAddress").type(JsonFieldType.STRING).description("도로명 주소"),
-					fieldWithPath("roadAddressCoord.lat").type(JsonFieldType.NUMBER).description("도로명 주소 위도"),
-					fieldWithPath("roadAddressCoord.lon").type(JsonFieldType.NUMBER).description("도로명 주소 경도")
+					fieldWithPath("coord.lat").type(JsonFieldType.NUMBER).description("지번 주소 위도"),
+					fieldWithPath("coord.lon").type(JsonFieldType.NUMBER).description("지번 주소 경도")
 				)));
-	}
-
-	private static SearchByCoordResponse createSearchByCoordResponse() {
-		return SearchByCoordResponse.builder()
-			.address("전북 익산시 부송동 100")
-			.roadAddress("전북 익산시 망산길 11-17")
-			.build();
-	}
-
-	private static SearchByAddressResponse createSearchByAddressResponse() {
-		return SearchByAddressResponse.builder()
-			.address("전북 익산시 부송동 100")
-			.addressCoord(new CoordinateDto(126.99, 35.97))
-			.roadAddress("전북 익산시 망산길 11-17")
-			.roadAddressCoord(new CoordinateDto(126.99, 35.97))
-			.build();
 	}
 }
