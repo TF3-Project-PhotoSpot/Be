@@ -5,7 +5,7 @@ import org.springframework.web.service.annotation.GetExchange;
 import org.springframework.web.service.annotation.HttpExchange;
 
 import com.tf4.photospot.map.application.response.kakao.KakaoCoordToAddressResponse;
-import com.tf4.photospot.map.application.response.kakao.KakaoSearchAddressResponse;
+import com.tf4.photospot.map.application.response.kakao.KakaoSearchLocationResponse;
 
 @HttpExchange("https://dapi.kakao.com/v2/local")
 public interface KakaoMapClient {
@@ -15,5 +15,5 @@ public interface KakaoMapClient {
 		@RequestParam(name = "x") double lon, @RequestParam(name = "y") double lat);
 
 	@GetExchange("/search/address.json")
-	KakaoSearchAddressResponse searchAddress(@RequestParam(name = "query") String address);
+	KakaoSearchLocationResponse searchAddress(@RequestParam(name = "query") String address);
 }

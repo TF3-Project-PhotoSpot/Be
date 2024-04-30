@@ -10,27 +10,26 @@ import lombok.Builder;
 @Builder
 public record RecommendedSpotListHttpResponse(
 	String centerAddress,
-	String centerRoadAddress,
 	List<RecommendedSpotHttpResponse> recommendedSpots,
 	Boolean hasNext
 ) {
+	private static final String CAN_NOT_FOUND_ADDRESS = "현재 위치를 찾을 수 없습니다.";
+
 	public RecommendedSpotListHttpResponse {
-		if (StringUtils.isEmpty(centerAddress) && StringUtils.isEmpty(centerRoadAddress)) {
-			String recommendedSpotAddress = recommendedSpots.stream()
+		if (StringUtils.isEmpty(centerAddress)) {
+			centerAddress = recommendedSpots.stream()
 				.map(RecommendedSpotHttpResponse::address)
 				.filter(StringUtils::isNotEmpty)
-				.findFirst().orElseGet(() -> null);
-			centerAddress = recommendedSpotAddress;
-			centerRoadAddress = recommendedSpotAddress;
+				.findFirst()
+				.orElseGet(() -> CAN_NOT_FOUND_ADDRESS);
 		}
 	}
 
-	public static RecommendedSpotListHttpResponse of(String centerAddress,
-		RecommendedSpotListResponse recommendedSpotsResponse) {
+	public static RecommendedSpotListHttpResponse of(String centerAddress, RecommendedSpotListResponse response) {
 		return RecommendedSpotListHttpResponse.builder()
 			.centerAddress(centerAddress)
-			.recommendedSpots(RecommendedSpotHttpResponse.convert(recommendedSpotsResponse.recommendedSpots()))
-			.hasNext(recommendedSpotsResponse.hasNext())
+			.recommendedSpots(RecommendedSpotHttpResponse.convert(response.recommendedSpots()))
+			.hasNext(response.hasNext())
 			.build();
 	}
 }

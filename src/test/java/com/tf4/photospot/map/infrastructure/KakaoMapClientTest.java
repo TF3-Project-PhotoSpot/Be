@@ -6,7 +6,6 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 
 import java.nio.charset.StandardCharsets;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpMethod;
@@ -19,7 +18,7 @@ import com.tf4.photospot.global.config.maps.KakaoMapProperties;
 import com.tf4.photospot.global.config.maps.MapApiConfig;
 import com.tf4.photospot.global.dto.CoordinateDto;
 import com.tf4.photospot.map.application.response.kakao.KakaoCoordToAddressResponse;
-import com.tf4.photospot.map.application.response.kakao.KakaoSearchAddressResponse;
+import com.tf4.photospot.map.application.response.kakao.KakaoSearchLocationResponse;
 import com.tf4.photospot.support.RestClientTestSupport;
 
 class KakaoMapClientTest extends RestClientTestSupport {
@@ -38,8 +37,7 @@ class KakaoMapClientTest extends RestClientTestSupport {
 	@Test
 	void searchAddress() {
 		//given
-		CoordinateDto expectedRoadAddressCoord = new CoordinateDto(126.99599512792346, 35.976749396987046);
-		CoordinateDto expecteAddressCoord = new CoordinateDto(126.99597295767953, 35.97664845766847);
+		CoordinateDto expectedCoord = new CoordinateDto(126.99597295767953d, 35.97664845766847d);
 		String expectedUri = UriComponentsBuilder.fromHttpUrl("https://dapi.kakao.com/v2/local/search/address.json")
 			.queryParam("query", "전북 삼성동 100")
 			.encode(StandardCharsets.UTF_8)
@@ -82,18 +80,11 @@ class KakaoMapClientTest extends RestClientTestSupport {
 			.andExpect(method(HttpMethod.GET))
 			.andRespond(withSuccess(expectedResponse, MediaType.APPLICATION_JSON));
 		//when
-		KakaoSearchAddressResponse response = Assertions.assertDoesNotThrow(
-			() -> kakaoMapClient.searchAddress("전북 삼성동 100"));
+		final KakaoSearchLocationResponse response = kakaoMapClient.searchAddress("전북 삼성동 100");
 		//then
-		assertThat(response.findFirstDocument())
-			.isPresent().get()
-			.extracting("address.x", "address.y", "roadAddress.x", "roadAddress.y")
-			.containsExactly(
-				String.valueOf(expecteAddressCoord.lon()),
-				String.valueOf(expecteAddressCoord.lat()),
-				String.valueOf(expectedRoadAddressCoord.lon()),
-				String.valueOf(expectedRoadAddressCoord.lat())
-			);
+		assertThat(response).isNotNull();
+		assertThat(response.address()).isEqualTo("전북 익산시 부송동 100");
+		assertThat(response.coord()).isEqualTo(expectedCoord);
 	}
 
 	@DisplayName("좌표를 지도상 주소로 변환한다.")
@@ -134,16 +125,11 @@ class KakaoMapClientTest extends RestClientTestSupport {
 			.andExpect(method(HttpMethod.GET))
 			.andRespond(withSuccess(expectedResponse, MediaType.APPLICATION_JSON));
 		//when
-		KakaoCoordToAddressResponse response = Assertions.assertDoesNotThrow(
-			() -> kakaoMapClient.convertCoordToAddress(127.0, 37.0));
+		final KakaoCoordToAddressResponse response = kakaoMapClient.convertCoordToAddress(127.0,
+			37.0);
 
 		//then
-		assertThat(response.findFirstDocument())
-			.isPresent().get()
-			.extracting("roadAddress.addressName", "address.addressName")
-			.containsExactly(
-				"경기도 안성시 죽산면 죽산초교길 69-4",
-				"경기 안성시 죽산면 죽산리 343-1"
-			);
+		assertThat(response).isNotNull();
+		assertThat(response.address()).isEqualTo("경기도 안성시 죽산면 죽산초교길 69-4");
 	}
 }

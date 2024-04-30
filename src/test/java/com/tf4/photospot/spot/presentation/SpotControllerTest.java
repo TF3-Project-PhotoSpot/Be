@@ -24,7 +24,6 @@ import org.springframework.test.web.servlet.ResultMatcher;
 
 import com.tf4.photospot.global.dto.CoordinateDto;
 import com.tf4.photospot.map.application.MapService;
-import com.tf4.photospot.map.application.response.SearchByCoordResponse;
 import com.tf4.photospot.mockobject.WithCustomMockUser;
 import com.tf4.photospot.post.application.response.PostPreviewResponse;
 import com.tf4.photospot.spot.application.SpotService;
@@ -58,7 +57,7 @@ class SpotControllerTest {
 				createRecommenedSpotResponse("서울시 도봉구 마들로 641"),
 				createRecommenedSpotResponse("서울시 도봉구 마들로 642"))
 			).hasNext(false).build();
-		given(mapService.searchByCoord(any(Point.class))).willReturn(SearchByCoordResponse.builder().build());
+		given(mapService.searchByCoord(any(Point.class))).willReturn(firstRecommendedSpotAddress);
 		given(spotService.getRecommendedSpotList(any(RecommendedSpotsRequest.class))).willReturn(response);
 		mockMvc.perform(get("/api/v1/spots/recommended")
 				.queryParam("lon", "127.0")
@@ -91,7 +90,7 @@ class SpotControllerTest {
 				createRecommenedSpotResponse("서울시 도봉구 마들로 642"))
 			).hasNext(false).build();
 
-		given(mapService.searchByCoord(any(Point.class))).willReturn(SearchByCoordResponse.builder().build());
+		given(mapService.searchByCoord(any(Point.class))).willReturn("");
 		given(spotService.getRecommendedSpotList(any(RecommendedSpotsRequest.class))).willReturn(response);
 
 		//when //then
@@ -103,7 +102,6 @@ class SpotControllerTest {
 			.andDo(print())
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.centerAddress").value(firstRecommendedSpotAddress))
-			.andExpect(jsonPath("$.centerRoadAddress").value(firstRecommendedSpotAddress))
 			.andExpect(jsonPath("$.recommendedSpots[0].address").value(firstRecommendedSpotAddress));
 	}
 

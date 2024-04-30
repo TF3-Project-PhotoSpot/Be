@@ -16,19 +16,16 @@ import com.tf4.photospot.global.argument.AuthUserId;
 import com.tf4.photospot.global.dto.CoordinateDto;
 import com.tf4.photospot.global.util.PointConverter;
 import com.tf4.photospot.map.application.MapService;
-import com.tf4.photospot.map.application.response.SearchByCoordResponse;
 import com.tf4.photospot.post.application.request.PostSearchCondition;
 import com.tf4.photospot.post.application.request.PostSearchType;
 import com.tf4.photospot.spot.application.SpotService;
 import com.tf4.photospot.spot.application.request.NearbySpotRequest;
 import com.tf4.photospot.spot.application.request.RecommendedSpotsRequest;
 import com.tf4.photospot.spot.application.response.NearbySpotListResponse;
-import com.tf4.photospot.spot.application.response.RecommendedSpotListResponse;
 import com.tf4.photospot.spot.application.response.SpotResponse;
 import com.tf4.photospot.spot.presentation.request.DateDto;
 import com.tf4.photospot.spot.presentation.request.FindSpotHttpRequest;
 import com.tf4.photospot.spot.presentation.response.PeriodSpotListResponse;
-import com.tf4.photospot.spot.presentation.response.RecommendedSpotHttpResponse;
 import com.tf4.photospot.spot.presentation.response.RecommendedSpotListHttpResponse;
 import com.tf4.photospot.spot.presentation.response.SpotHttpResponse;
 import com.tf4.photospot.spot.presentation.response.UserSpotListHttpResponse;
@@ -55,15 +52,11 @@ public class SpotController {
 		@Range(min = 1, max = 10, message = "미리보기 사진은 1~10개만 가능합니다.") Integer postPreviewCount,
 		Pageable pageable
 	) {
-		SearchByCoordResponse searchByCoordResponse = mapService.searchByCoord(PointConverter.convert(coord));
-		RecommendedSpotListResponse recommendedSpotsResponse = spotService.getRecommendedSpotList(
-			new RecommendedSpotsRequest(coord.toCoord(), radius, postPreviewCount, pageable));
-		return RecommendedSpotListHttpResponse.builder()
-			.centerAddress(searchByCoordResponse.address())
-			.centerRoadAddress(searchByCoordResponse.roadAddress())
-			.recommendedSpots(RecommendedSpotHttpResponse.convert(recommendedSpotsResponse.recommendedSpots()))
-			.hasNext(recommendedSpotsResponse.hasNext())
-			.build();
+		var request = new RecommendedSpotsRequest(coord.toCoord(), radius, postPreviewCount, pageable);
+		return RecommendedSpotListHttpResponse.of(
+			mapService.searchByCoord(PointConverter.convert(coord)),
+			spotService.getRecommendedSpotList(request)
+		);
 	}
 
 	@GetMapping

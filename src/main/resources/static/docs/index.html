@@ -451,6 +451,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <ul class="sectlevel2">
 <li><a href="#_성공_응답">성공 응답</a></li>
 <li><a href="#_에러_응답">에러 응답</a></li>
+<li><a href="#_태그_타입">태그 타입</a></li>
 <li><a href="#_에러_코드">에러 코드</a></li>
 </ul>
 </li>
@@ -649,6 +650,17 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
   } ]
 }</code></pre>
 </div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_태그_타입"><a class="link" href="#_태그_타입">태그 타입</a></h3>
+<hr>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-json hljs" data-lang="json">{
+  "tagType" : [ "POSITIVE", "NEGATIVE", "ETC" ]
+}</code></pre>
 </div>
 </div>
 </div>
@@ -1829,7 +1841,6 @@ Host: localhost:8080</code></pre>
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-json hljs" data-lang="json">{
   "centerAddress" : "서울시 도봉구 마들로 643",
-  "centerRoadAddress" : "서울시 도봉구 마들로 643",
   "recommendedSpots" : [ {
     "id" : 1,
     "address" : "서울시 도봉구 마들로 643",
@@ -1838,7 +1849,7 @@ Host: localhost:8080</code></pre>
       "lon" : 127.0468177,
       "lat" : 37.6676198
     },
-    "photoUrls" : [ "http://image3.com" ]
+    "photoUrls" : [ "image3.com" ]
   } ],
   "hasNext" : true
 }</code></pre>
@@ -1868,12 +1879,6 @@ Host: localhost:8080</code></pre>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
 <td class="tableblock halign-left valign-top"></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">중심 좌표의 지면 주소</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>centerRoadAddress</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">중심 좌표의 도로면 주소</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>recommendedSpots</code></p></td>
@@ -4195,12 +4200,7 @@ Host: localhost:8080</code></pre>
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-json hljs" data-lang="json">{
   "address" : "전북 익산시 부송동 100",
-  "addressCoord" : {
-    "lon" : 126.99,
-    "lat" : 35.97
-  },
-  "roadAddress" : "전북 익산시 망산길 11-17",
-  "roadAddressCoord" : {
+  "coord" : {
     "lon" : 126.99,
     "lat" : 35.97
   }
@@ -4233,34 +4233,16 @@ Host: localhost:8080</code></pre>
 <td class="tableblock halign-left valign-top"><p class="tableblock">지번 주소</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>addressCoord.lat</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>coord.lat</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
 <td class="tableblock halign-left valign-top"></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">지번 주소 위도</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>addressCoord.lon</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>coord.lon</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
 <td class="tableblock halign-left valign-top"></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">지번 주소 경도</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>roadAddress</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">도로명 주소</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>roadAddressCoord.lat</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">도로명 주소 위도</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>roadAddressCoord.lon</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">도로명 주소 경도</p></td>
 </tr>
 </tbody>
 </table>

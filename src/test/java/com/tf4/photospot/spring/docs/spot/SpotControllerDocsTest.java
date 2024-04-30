@@ -16,7 +16,6 @@ import org.springframework.restdocs.payload.JsonFieldType;
 
 import com.tf4.photospot.global.dto.CoordinateDto;
 import com.tf4.photospot.map.application.MapService;
-import com.tf4.photospot.map.application.response.SearchByCoordResponse;
 import com.tf4.photospot.post.application.request.PostSearchCondition;
 import com.tf4.photospot.post.application.response.PostPreviewResponse;
 import com.tf4.photospot.spot.application.SpotService;
@@ -135,11 +134,19 @@ public class SpotControllerDocsTest extends RestDocsSupport {
 	@Test
 	void getRecommendedSpotList() throws Exception {
 		//given
+		final List<RecommendedSpotResponse> recommendedSpotResponses = List.of(RecommendedSpotResponse.builder()
+			.id(1L)
+			.address("서울시 도봉구 마들로 643")
+			.postCount(10L)
+			.coord(DEFAULT_COORD)
+			.postPreviewResponses(List.of(
+				new PostPreviewResponse(3L, 1L, "image3.com")))
+			.build());
 		RecommendedSpotListResponse recommendedSpotsResponse = RecommendedSpotListResponse.builder()
-			.recommendedSpots(List.of(createRecommendedSpotListResponse()))
+			.recommendedSpots(recommendedSpotResponses)
 			.hasNext(true)
 			.build();
-		given(mapService.searchByCoord(any(Point.class))).willReturn(createSearchByCoordResponse());
+		given(mapService.searchByCoord(any(Point.class))).willReturn("서울시 도봉구 마들로 643");
 		given(spotService.getRecommendedSpotList(any(RecommendedSpotsRequest.class)))
 			.willReturn(recommendedSpotsResponse);
 		//when then
@@ -166,7 +173,6 @@ public class SpotControllerDocsTest extends RestDocsSupport {
 				),
 				responseFields(
 					fieldWithPath("centerAddress").type(JsonFieldType.STRING).description("중심 좌표의 지면 주소"),
-					fieldWithPath("centerRoadAddress").type(JsonFieldType.STRING).description("중심 좌표의 도로면 주소"),
 					fieldWithPath("recommendedSpots").type(JsonFieldType.ARRAY).description("주변 추천 스팟 리스트")
 						.attributes(defaultValue("emptyList")),
 					fieldWithPath("recommendedSpots[].id").type(JsonFieldType.NUMBER).description("스팟 ID"),
@@ -233,23 +239,5 @@ public class SpotControllerDocsTest extends RestDocsSupport {
 					fieldWithPath("spots[].posts[].takenAt").type(JsonFieldType.STRING).description("사진 촬영 일자")
 				)
 			));
-	}
-
-	private static SearchByCoordResponse createSearchByCoordResponse() {
-		return SearchByCoordResponse.builder()
-			.address("서울시 도봉구 마들로 643")
-			.roadAddress("서울시 도봉구 마들로 643")
-			.build();
-	}
-
-	private static RecommendedSpotResponse createRecommendedSpotListResponse() {
-		return RecommendedSpotResponse.builder()
-			.id(1L)
-			.address("서울시 도봉구 마들로 643")
-			.postCount(10L)
-			.coord(DEFAULT_COORD)
-			.postPreviewResponses(List.of(
-				new PostPreviewResponse(3L, 1L, "http://image3.com")))
-			.build();
 	}
 }
