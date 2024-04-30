@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.locationtech.jts.geom.Point;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -94,14 +93,5 @@ public class SpotService {
 		return postsGroupBySpot.keySet().stream()
 			.map(spotId -> PeriodSpotResponse.from(postsGroupBySpot.get(spotId)))
 			.toList();
-	}
-
-	@Transactional
-	public void create(String address, Point coord) {
-		spotRepository.save(Spot.builder()
-			.address(address)
-			.coord(coord)
-			.build()
-		);
 	}
 }

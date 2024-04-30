@@ -2,13 +2,17 @@ package com.tf4.photospot.map.application;
 
 import org.locationtech.jts.geom.Point;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.tf4.photospot.global.dto.CoordinateDto;
 import com.tf4.photospot.global.util.PointConverter;
 import com.tf4.photospot.map.application.response.SearchLocationResponse;
 import com.tf4.photospot.map.application.response.kakao.KakaoCoordToAddressResponse;
 import com.tf4.photospot.map.application.response.kakao.KakaoDistanceResponse;
+import com.tf4.photospot.map.domain.TemporaryLocation;
 import com.tf4.photospot.map.infrastructure.KakaoMapClient;
 import com.tf4.photospot.map.infrastructure.KakaoMobilityClient;
+import com.tf4.photospot.map.infrastructure.TemporaryLocationRepository;
 
 import io.micrometer.common.util.StringUtils;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +26,7 @@ public class MapService {
 
 	private final KakaoMapClient kakaoMapClient;
 	private final KakaoMobilityClient kakaoMobilityClient;
+	private final TemporaryLocationRepository temporaryLocationRepository;
 
 	public String searchByCoord(Point coord) {
 		final KakaoCoordToAddressResponse response = kakaoMapClient.convertCoordToAddress(
@@ -44,5 +49,10 @@ public class MapService {
 		KakaoDistanceResponse response = kakaoMobilityClient.findDistance(
 			PointConverter.toStringValue(startingCoord), PointConverter.toStringValue(destCoord));
 		return response.getDistance();
+	}
+
+	@Transactional
+	public void createTemporaryLocation(CoordinateDto coord) {
+		temporaryLocationRepository.save(new TemporaryLocation(coord.lon(), coord.lat()));
 	}
 }

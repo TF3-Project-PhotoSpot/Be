@@ -9,7 +9,6 @@ import com.tf4.photospot.global.dto.CoordinateDto;
 import com.tf4.photospot.global.util.PointConverter;
 import com.tf4.photospot.map.application.MapService;
 import com.tf4.photospot.map.application.response.SearchLocationResponse;
-import com.tf4.photospot.spot.application.SpotService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -18,10 +17,9 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequiredArgsConstructor
 public class MapController {
-	private static final String TEMPORARY_SPOT_ADDRESS = "";
+	private static final String TEMPORARY_LOCATION_ADDRESS = "";
 
 	private final MapService mapService;
-	private final SpotService spotService;
 
 	@GetMapping("/search/location")
 	public SearchLocationResponse searchLocation(
@@ -30,8 +28,8 @@ public class MapController {
 		final String address = mapService.searchByCoord(PointConverter.convert(coord));
 		final SearchLocationResponse searchLocationResponse = mapService.searchByAddress(address);
 		if (searchLocationResponse == SearchLocationResponse.ERROR_RESPONSE) {
-			spotService.create(TEMPORARY_SPOT_ADDRESS, PointConverter.convert(coord));
-			return new SearchLocationResponse(address, coord);
+			mapService.createTemporaryLocation(coord);
+			return new SearchLocationResponse(TEMPORARY_LOCATION_ADDRESS, coord);
 		}
 		return searchLocationResponse;
 	}

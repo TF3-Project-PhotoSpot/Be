@@ -15,16 +15,14 @@ import com.tf4.photospot.global.dto.CoordinateDto;
 import com.tf4.photospot.map.application.MapService;
 import com.tf4.photospot.map.application.response.SearchLocationResponse;
 import com.tf4.photospot.map.presentation.MapController;
-import com.tf4.photospot.spot.application.SpotService;
 import com.tf4.photospot.spring.docs.RestDocsSupport;
 
 class MapControllerDocsTest extends RestDocsSupport {
 	private final MapService mapService = mock(MapService.class);
-	private final SpotService spotService = mock(SpotService.class);
 
 	@Override
 	protected Object initController() {
-		return new MapController(mapService, spotService);
+		return new MapController(mapService);
 	}
 
 	@DisplayName("특정 좌표로 지도의 장소를 찾는다.")
