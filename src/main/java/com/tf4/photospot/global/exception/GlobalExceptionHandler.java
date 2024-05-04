@@ -3,6 +3,7 @@ package com.tf4.photospot.global.exception;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
@@ -131,8 +132,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 		@NotNull HttpStatusCode statusCode,
 		@NotNull WebRequest request
 	) {
-		final Throwable cause = ex.getCause();
-		log.error("{} : {}", cause.getClass(), cause.getMessage());
+		Optional.ofNullable(ex.getCause())
+			.ifPresent(cause -> log.error("{} : {}", cause.getClass(), cause.getMessage()));
 		log.error("{} : {}", ex.getClass(), ex.getMessage());
 		return createResponse(CommonErrorCode.UNEXPECTED_ERROR);
 	}
