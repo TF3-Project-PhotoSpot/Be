@@ -131,6 +131,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 		@NotNull HttpStatusCode statusCode,
 		@NotNull WebRequest request
 	) {
+		final Throwable cause = ex.getCause();
+		log.error("{} : {}", cause.getClass(), cause.getMessage());
+		log.error("{} : {}", ex.getClass(), ex.getMessage());
 		return createResponse(CommonErrorCode.UNEXPECTED_ERROR);
 	}
 
