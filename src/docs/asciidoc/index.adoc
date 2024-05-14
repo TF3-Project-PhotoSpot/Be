@@ -1,0 +1,47 @@
+ifndef::snippets[]
+:snippets: ../../build/generated-snippets
+endif::[]
+
+= PhotoSpot Rest API Document
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:sectlinks:
+
+== Common
+
+include::api/common/common.adoc[]
+
+== Auth API
+
+include::api/auth/auth.adoc[]
+
+== User API
+
+include::api/user/user.adoc[]
+
+== Spot API
+
+include::api/spot/spot.adoc[]
+
+== photo API
+
+include::api/photo/photo.adoc[]
+
+== Post API
+
+include::api/post/post.adoc[]
+
+== Map API
+
+include::api/map/map.adoc[]
+
+== Album API
+
+include::api/album/album.adoc[]
+
+== Bookmark API
+
+include::api/bookmark/bookmark.adoc[]

@@ -1,0 +1,51 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/photospot
+    username: root
+    password: 1234
+  jpa:
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        defer-datasource-initialization: true
+        use_sql_comments: true
+        format_sql: true
+    open-in-view: false
+  cloud:
+    aws:
+      credentials:
+        access-key: awsaccesskey
+        secret-key: awssecretkey
+      s3:
+        region: ap-northeast-2
+        bucket: bucket
+  data:
+    redis:
+      port: 6379
+      host: localhost
+      password: 1234
+
+logging:
+  level:
+    org.hibernate.SQL: debug
+    org.hibernate.type.descriptor.sql.BasicBinder: trace
+
+kakao:
+  rest-api-key: test6d177caw1120g3510952427y92d3
+  app-id: 123456
+  admin-key: admin-key-admin-key-admin-key
+
+apple:
+  client-id: appleClientId
+  key-id: appleKeyId
+  team-id: appleTeamId
+  sign-key: signKey
+
+jwt:
+  issuer: test-issuer
+  secret_key: testk24rlk24j4akfjaklfj3k3rj439841398sadkfjkefjkqefj44324230fskfjwkgjwlgkjw2lsfkjlefjwlkj50921ifkljfwdlkfjwlkfjdwlkfj
+
+slack:
+  url: slack_url/webhook

@@ -1,0 +1,24 @@
+=== 사용자 정보 조회
+
+'''
+
+include::{snippets}/user-controller-docs-test/get-user-info/http-request.adoc[]
+include::{snippets}/user-controller-docs-test/get-user-info/response-body.adoc[]
+include::{snippets}/user-controller-docs-test/get-user-info/response-fields.adoc[]
+
+=== 사용자 프로필 업데이트
+
+'''
+
+include::{snippets}/user-controller-docs-test/update-user-info/http-request.adoc[]
+include::{snippets}/user-controller-docs-test/update-user-info/request-parts.adoc[]
+include::{snippets}/user-controller-docs-test/update-user-info/response-body.adoc[]
+include::{snippets}/user-controller-docs-test/update-user-info/response-fields.adoc[]
+
+=== 유저 신고
+
+'''
+
+include::{snippets}/user-controller-docs-test/report-user/http-request.adoc[]
+include::{snippets}/user-controller-docs-test/report-user/response-body.adoc[]
+include::{snippets}/user-controller-docs-test/report-user/response-fields.adoc[]

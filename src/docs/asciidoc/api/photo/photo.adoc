@@ -1,0 +1,7 @@
+=== 방명록 사진 업로드
+
+'''
+include::{snippets}/photo-controller-docs-test/upload-photo/http-request.adoc[]
+include::{snippets}/photo-controller-docs-test/upload-photo/request-parts.adoc[]
+include::{snippets}/photo-controller-docs-test/upload-photo/response-body.adoc[]
+include::{snippets}/photo-controller-docs-test/upload-photo/response-fields.adoc[]
