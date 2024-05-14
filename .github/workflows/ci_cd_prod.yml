@@ -84,7 +84,7 @@ jobs:
           echo "cd /home/ubuntu/app" >> start.sh
           echo "aws ecr get-login-password --region $REGION | docker login --username AWS --password-stdin $REGISTRY" >> start.sh
           echo "docker pull $REGISTRY/$ECR_REPOSITORY:$PROFILE_NAME-$IMAGE_TAG" >> start.sh 
-          echo "docker run -p 8080:8080 -e PROFILE=$PROFILE_NAME -d --restart always --name plop-app $REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> start.sh
+          echo "docker run -p 8080:8080 -e "SPRING_PROFILES_ACTIVE=prod" -d --restart always --name plop-app $REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> start.sh
           mv start.sh scripts/start.sh
 
       - name: Upload to S3
