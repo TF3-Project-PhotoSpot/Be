@@ -77,3 +77,31 @@ spring:
         instance-profile: true
         access-key:
         secret-key:
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: prod
+    import: aws-parameterstore:/config/prod/
+
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+  data:
+    redis:
+      port: 6379
+      host: ${REDIS_HOST}
+      password:
+  jpa:
+    hibernate:
+      ddl-auto: none
+  cloud:
+    aws:
+      credentials:
+        instance-profile: true
+        access-key:
+        secret-key:
