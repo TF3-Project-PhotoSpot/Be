@@ -89,6 +89,8 @@ jobs:
           mv start.sh scripts/start.sh
           touch stop.sh
           echo "cd /home/ubuntu/app" >> stop.sh
+          echo "docker stop plop-app 2> /dev/null" >> stop.sh
+          echo "docker rm plop-app 2> /dev/null" >> stop.sh
           echo "docker image prune -f" >> stop.sh
           mv stop.sh scripts/stop.sh
 
