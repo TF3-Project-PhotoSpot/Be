@@ -80,16 +80,21 @@ jobs:
         env:
           REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         run: |
+          mkdir scripts
           touch start.sh
           echo "cd /home/ubuntu/app" >> start.sh
           echo "aws ecr get-login-password --region $REGION | docker login --username AWS --password-stdin $REGISTRY" >> start.sh
           echo "docker pull $REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> start.sh 
           echo "docker run -p 8080:8080 -e "SPRING_PROFILES_ACTIVE=prod" -d --restart always --name plop-app $REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> start.sh
           mv start.sh scripts/start.sh
+          touch stop.sh
+          echo "cd /home/ubuntu/app" >> stop.sh
+          echo "docker image prune -f" >> stop.sh
+          mv stop.sh scripts/stop.sh
 
       - name: Upload to S3
         run: |
-          zip $PROFILE_NAME-$IMAGE_TAG.zip ./scripts/start.sh ./appspec-prod/appspec.yml
+          zip -r $PROFILE_NAME-$IMAGE_TAG.zip ./scripts appspec.yml
           aws s3 cp --region $REGION --acl private ./$PROFILE_NAME-$IMAGE_TAG.zip s3://plop-s3/deploy/
 
       - name: Trigger CodeDeploy
