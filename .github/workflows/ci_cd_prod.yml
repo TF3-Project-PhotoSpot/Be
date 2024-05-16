@@ -94,7 +94,7 @@ jobs:
 
       - name: Upload to S3
         run: |
-          zip -r $PROFILE_NAME-$IMAGE_TAG.zip ./scripts/start.sh appspec.yml
+          zip -r $PROFILE_NAME-$IMAGE_TAG.zip ./scripts appspec.yml
           aws s3 cp --region $REGION --acl private ./$PROFILE_NAME-$IMAGE_TAG.zip s3://plop-s3/deploy/
 
       - name: Trigger CodeDeploy
