@@ -77,12 +77,18 @@ jobs:
         env:
           REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         run: |
+          mkdir scripts
           touch start.sh
           echo "cd /home/ubuntu/app" >> start.sh
           echo "aws ecr get-login-password --region $REGION | docker login --username AWS --password-stdin $REGISTRY" >> start.sh
           echo "docker pull $REGISTRY/$ECR_REPOSITORY:$PROFILE_NAME-$IMAGE_TAG" >> start.sh 
           echo "docker-compose up -d" >> start.sh
           mv start.sh scripts/start.sh
+          touch stop.sh
+          echo "cd /home/ubuntu/app" >> stop.sh
+          echo "docker-compose down" >> stop.sh
+          echo "docker image prune -f" >> stop.sh
+          mv stop.sh scripts/stop.sh
           touch .env
           echo "PHOTOSPOT_IMAGE=$REGISTRY/$ECR_REPOSITORY:$PROFILE_NAME-$IMAGE_TAG" >> .env
           echo "PROFILE=$PROFILE_NAME" >> .env
