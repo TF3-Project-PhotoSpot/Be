@@ -53,7 +53,6 @@ public class TestFixture {
 	}
 
 	public static Post createPost(Spot spot, User user) {
-		spot.incPostCount();
 		return createPost(spot, user, 0);
 	}
 
@@ -63,12 +62,10 @@ public class TestFixture {
 	}
 
 	public static Post createPost(Spot spot, User user, int likeCount) {
-		spot.incPostCount();
 		return createPost(spot, user, createPhoto(), likeCount, false);
 	}
 
 	public static Post createPost(Spot spot, User user, Photo photo) {
-		spot.incPostCount();
 		return createPost(spot, user, photo, 0, false);
 	}
 

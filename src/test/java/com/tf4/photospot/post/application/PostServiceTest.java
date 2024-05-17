@@ -9,12 +9,14 @@ import static org.junit.jupiter.api.DynamicTest.*;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestFactory;
+import org.junit.jupiter.api.function.Executable;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -27,6 +29,7 @@ import com.tf4.photospot.global.exception.domain.PostErrorCode;
 import com.tf4.photospot.global.exception.domain.UserErrorCode;
 import com.tf4.photospot.mockobject.MockS3Config;
 import com.tf4.photospot.photo.domain.Photo;
+import com.tf4.photospot.photo.domain.PhotoRepository;
 import com.tf4.photospot.photo.domain.S3Directory;
 import com.tf4.photospot.post.application.request.PostSearchCondition;
 import com.tf4.photospot.post.application.request.PostSearchType;
@@ -73,6 +76,7 @@ class PostServiceTest extends IntegrationTestSupport {
 	private final TagRepository tagRepository;
 	private final MentionRepository mentionRepository;
 	private final PostReportRepository postReportRepository;
+	private final PhotoRepository photoRepository;
 	private final EntityManager em;
 
 	@DisplayName("방명록 좋아요")
@@ -762,5 +766,54 @@ class PostServiceTest extends IntegrationTestSupport {
 			.get()
 			.extracting("likeCount")
 			.isEqualTo(1);
+	}
+
+	@DisplayName("방명록 목록을 삭제한다.")
+	@Test
+	void deletePosts() {
+		//given
+		final User user = userRepository.save(createUser("bean"));
+		final Spot spotA = spotRepository.save(createSpot());
+		final Spot spotB = spotRepository.save(createSpot());
+		final Spot spotC = spotRepository.save(createSpot());
+		final List<Post> posts = postRepository.saveAll(List.of(
+			createPost(spotA, user),
+			createPost(spotA, user),
+			createPost(spotB, user),
+			createPost(spotB, user),
+			createPost(spotC, user)
+		));
+		final List<Long> postIds = posts.stream().map(Post::getId).toList();
+		final List<Spot> spots = posts.stream().map(Post::getSpot).toList();
+		final List<Photo> photos = posts.stream().map(Post::getPhoto).toList();
+
+		//when
+		em.flush();
+		em.clear();
+		postService.deletePostsBy(user.getId(), postIds);
+		//then
+		postRepository.findAllById(postIds).stream()
+			.allMatch(deletedPost -> deletedPost.getDeletedAt() != null);
+		photoRepository.findAllById(photos.stream().map(Photo::getId).toList()).stream()
+			.allMatch(photo -> photo.getDeletedAt() != null);
+		spotRepository.findAllById(spots.stream().map(Spot::getId).collect(Collectors.toSet())).stream()
+			.allMatch(spot -> spot.getPostCount() == 0);
+	}
+
+	@DisplayName("내 방명록 목록만 삭제 할 수 있다.")
+	@Test
+	void notDeleteOtherPosts() {
+		//given
+		final User user = userRepository.save(createUser("bean"));
+		final User otherUser = userRepository.save(createUser("bin"));
+		final Spot spot = spotRepository.save(createSpot());
+		final List<Post> posts = postRepository.saveAll(createList(() -> createPost(spot, otherUser), 3));
+		final List<Long> postIds = posts.stream().mapToLong(Post::getId).boxed().toList();
+
+		//when
+		Executable action = () -> postService.deletePostsBy(user.getId(), postIds);
+
+		//then
+		assertThrows(ApiException.class, action, PostErrorCode.CAN_NOT_DELETE_POSTS.getMessage());
 	}
 }

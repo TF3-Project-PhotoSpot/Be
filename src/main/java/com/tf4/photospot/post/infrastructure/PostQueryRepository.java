@@ -25,6 +25,7 @@ import com.querydsl.core.types.dsl.EntityPathBase;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.tf4.photospot.global.entity.BaseEntity;
 import com.tf4.photospot.global.util.QueryDslUtils;
+import com.tf4.photospot.photo.domain.Photo;
 import com.tf4.photospot.post.application.request.PostSearchCondition;
 import com.tf4.photospot.post.application.request.PostSearchType;
 import com.tf4.photospot.post.application.response.PostDetail;
@@ -221,5 +222,27 @@ public class PostQueryRepository extends QueryDslUtils {
 		LocalDateTime startDate = start.atStartOfDay();
 		LocalDateTime endDate = end.atStartOfDay().plusDays(1).minusNanos(1);
 		return photo.takenAt.between(startDate, endDate);
+	}
+
+	public List<Post> findPosts(Long writerId, List<Long> postIds) {
+		return queryFactory.selectFrom(post)
+			.where(post.writer.id.eq(writerId).and(post.id.in(postIds)))
+			.fetch();
+	}
+
+	public void deletePosts(List<Post> posts) {
+		final LocalDateTime deletedAt = LocalDateTime.now();
+		queryFactory.update(post)
+			.set(post.deletedAt, deletedAt)
+			.where(post.in(posts))
+			.execute();
+	}
+
+	public void deletePhotos(List<Photo> photos) {
+		final LocalDateTime deletedAt = LocalDateTime.now();
+		queryFactory.update(photo)
+			.set(photo.deletedAt, deletedAt)
+			.where(photo.in(photos))
+			.execute();
 	}
 }

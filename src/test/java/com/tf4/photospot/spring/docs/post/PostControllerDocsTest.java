@@ -35,6 +35,7 @@ import com.tf4.photospot.post.presentation.request.PostReportRequest;
 import com.tf4.photospot.post.presentation.request.PostStateUpdateRequest;
 import com.tf4.photospot.post.presentation.request.PostUpdateHttpRequest;
 import com.tf4.photospot.post.presentation.request.PostUploadRequest;
+import com.tf4.photospot.post.presentation.request.PostsDeleteHttpRequest;
 import com.tf4.photospot.post.presentation.request.SpotInfoDto;
 import com.tf4.photospot.spring.docs.RestDocsSupport;
 
@@ -533,5 +534,29 @@ public class PostControllerDocsTest extends RestDocsSupport {
 					fieldWithPath("tags.POSITIVE[].iconUrl").type(JsonFieldType.STRING).description("태그 icon url")
 						.attributes(defaultValue("\"\""))
 				)));
+	}
+
+	@Test
+	void deletePosts() throws Exception {
+		// given
+		final String requestBody = mapper.writeValueAsString(new PostsDeleteHttpRequest(List.of(1L, 2L)));
+		willDoNothing().given(postService).deletePostsBy(anyLong(), anyList());
+		// when then
+		mockMvc.perform(delete("/api/v1/posts")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(requestBody)
+				.accept(MediaType.APPLICATION_JSON)
+			)
+			.andExpect(status().isOk())
+			.andDo(restDocsTemplate(
+				requestFields(
+					fieldWithPath("postIds").type(JsonFieldType.ARRAY)
+						.description("방명록 id 리스트")
+						.attributes(constraints("양수만 가능"))
+				),
+				responseFields(
+					fieldWithPath("message").type(JsonFieldType.STRING).description("성공")
+				)
+			));
 	}
 }
