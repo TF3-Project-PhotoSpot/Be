@@ -15,6 +15,7 @@ import com.tf4.photospot.global.exception.ApiException;
 import com.tf4.photospot.global.exception.domain.PostErrorCode;
 import com.tf4.photospot.global.exception.domain.UserErrorCode;
 import com.tf4.photospot.photo.application.S3Uploader;
+import com.tf4.photospot.photo.domain.PhotoRepository;
 import com.tf4.photospot.photo.domain.S3Directory;
 import com.tf4.photospot.post.application.request.PostCreateDto;
 import com.tf4.photospot.post.application.request.PostSearchCondition;
@@ -42,8 +43,10 @@ import com.tf4.photospot.post.presentation.request.PostUploadRequest;
 import com.tf4.photospot.post.presentation.request.SpotInfoDto;
 import com.tf4.photospot.spot.domain.Spot;
 import com.tf4.photospot.spot.domain.SpotRepository;
+import com.tf4.photospot.spot.infrastructure.SpotJdbcRepository;
 import com.tf4.photospot.user.application.UserService;
 import com.tf4.photospot.user.domain.User;
+import com.tf4.photospot.user.domain.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -54,12 +57,15 @@ import software.amazon.awssdk.utils.CollectionUtils;
 @Slf4j
 @RequiredArgsConstructor
 public class PostService {
+	private final PhotoRepository photoRepository;
+	private final UserRepository userRepository;
 	private final PostQueryRepository postQueryRepository;
 	private final PostJdbcRepository postJdbcRepository;
 	private final PostRepository postRepository;
 	private final PostTagRepository postTagRepository;
 	private final MentionRepository mentionRepository;
 	private final SpotRepository spotRepository;
+	private final SpotJdbcRepository spotJdbcRepository;
 	private final PostLikeRepository postLikeRepository;
 	private final S3Uploader s3Uploader;
 	private final PostReportRepository postReportRepository;
@@ -247,5 +253,16 @@ public class PostService {
 				.iconUrl(tag.getIconUrl())
 				.build())
 			.toList();
+	}
+
+	@Transactional
+	public void deletePostsBy(Long userId, List<Long> postIds) {
+		final List<Post> posts = postQueryRepository.findPosts(userId, postIds);
+		if (posts.size() != postIds.size()) {
+			throw new ApiException(PostErrorCode.CAN_NOT_DELETE_POSTS);
+		}
+		postQueryRepository.deletePosts(posts);
+		postQueryRepository.deletePhotos(posts.stream().map(Post::getPhoto).toList());
+		spotJdbcRepository.decreasePostCountBy(posts);
 	}
 }

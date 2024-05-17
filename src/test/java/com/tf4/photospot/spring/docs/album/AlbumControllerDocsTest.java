@@ -201,7 +201,7 @@ public class AlbumControllerDocsTest extends RestDocsSupport {
 		PostIdListHttpRequest request = new PostIdListHttpRequest(List.of(1L, 2L));
 		willDoNothing().given(albumService).replacePosts(anyList(), anyLong(), anyLong());
 		//when
-		mockMvc.perform(delete("/api/v1/albums/{albumId}/posts", 1L)
+		mockMvc.perform(patch("/api/v1/albums/{albumId}/posts", 1L)
 				.contentType(MediaType.APPLICATION_JSON)
 				.accept(MediaType.APPLICATION_JSON)
 				.content(mapper.writeValueAsString(request))
