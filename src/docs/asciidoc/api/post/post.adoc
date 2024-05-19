@@ -111,6 +111,7 @@ include::{snippets}/post-controller-docs-test/delete-posts/http-request.adoc[]
 include::{snippets}/post-controller-docs-test/delete-posts/request-fields.adoc[]
 include::{snippets}/post-controller-docs-test/delete-posts/response-body.adoc[]
 
+
 === 태그 목록 조회
 
 '''
