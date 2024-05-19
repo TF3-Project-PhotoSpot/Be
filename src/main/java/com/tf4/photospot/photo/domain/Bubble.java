@@ -2,6 +2,7 @@ package com.tf4.photospot.photo.domain;
 
 import com.tf4.photospot.global.entity.BaseEntity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -21,8 +22,10 @@ public class Bubble extends BaseEntity {
 
 	private String text;
 
+	@Column(name = "pos_x")
 	private double posX;
 
+	@Column(name = "pos_y")
 	private double posY;
 
 	@Builder
