@@ -191,7 +191,7 @@ public class PostController {
 	public TagListResponse getTags() {
 		return TagListResponse.from(postService.getTags());
 	}
-  
+
 	@DeleteMapping
 	public ApiResponse deletePosts(
 		@AuthUserId Long userId,
