@@ -103,6 +103,15 @@ include::{snippets}/post-controller-docs-test/delete-post/http-request.adoc[]
 include::{snippets}/post-controller-docs-test/delete-post/response-body.adoc[]
 include::{snippets}/post-controller-docs-test/delete-post/response-fields.adoc[]
 
+=== 방명록 목록 삭제
+
+'''
+
+include::{snippets}/post-controller-docs-test/delete-posts/http-request.adoc[]
+include::{snippets}/post-controller-docs-test/delete-posts/request-fields.adoc[]
+include::{snippets}/post-controller-docs-test/delete-posts/response-body.adoc[]
+
+
 === 태그 목록 조회
 
 '''
