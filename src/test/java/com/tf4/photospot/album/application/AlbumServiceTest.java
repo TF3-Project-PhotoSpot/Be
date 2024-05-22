@@ -4,6 +4,7 @@ import static com.tf4.photospot.support.TestFixture.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.DynamicTest.*;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -25,8 +26,10 @@ import com.tf4.photospot.album.domain.AlbumRepository;
 import com.tf4.photospot.album.domain.AlbumUser;
 import com.tf4.photospot.album.domain.AlbumUserRepository;
 import com.tf4.photospot.album.infrastructure.AlbumQueryRepository;
+import com.tf4.photospot.global.dto.SlicePageDto;
 import com.tf4.photospot.post.application.request.PostSearchCondition;
 import com.tf4.photospot.post.application.request.PostSearchType;
+import com.tf4.photospot.post.application.response.PostPreviewResponse;
 import com.tf4.photospot.post.domain.Post;
 import com.tf4.photospot.post.domain.PostRepository;
 import com.tf4.photospot.spot.domain.Spot;
@@ -300,5 +303,37 @@ class AlbumServiceTest extends IntegrationTestSupport {
 					.doesNotContain("photoUrl6");
 			})
 		);
+	}
+
+	@DisplayName("내 앨범에 포함된 방명록만 조회할 수 있다.")
+	@Test
+	void canVisiblePostPreviewOfAlbum() {
+		//given
+		final Spot spot = spotRepository.save(createSpot());
+		final User user = userRepository.save(createUser("user"));
+		final User otherUser = userRepository.save(createUser("otherUser"));
+		final Long albumId = albumService.create(user.getId(), "albumA");
+		final Long otherAlbumId = albumService.create(user.getId(), "albumB");
+		final Long otherUserAlbumId = albumService.create(user.getId(), "albumC");
+		final List<Post> posts = postRepository.saveAll(createList(() -> createPost(spot, user), 2));
+		final List<Post> otherAlbumPosts = postRepository.saveAll(createList(() -> createPost(spot, user), 2));
+		final List<Post> otherUserPosts = postRepository.saveAll(createList(() -> createPost(spot, otherUser), 2));
+		final PostSearchCondition albumPostsSearchCond = PostSearchCondition.builder()
+			.albumId(albumId)
+			.userId(user.getId())
+			.type(PostSearchType.ALBUM_POSTS)
+			.pageable(PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "id")))
+			.build();
+		albumService.addPosts(posts.stream().map(Post::getId).toList(), albumId, user.getId());
+		albumService.addPosts(otherAlbumPosts.stream().map(Post::getId).toList(), otherAlbumId, user.getId());
+		albumService.addPosts(otherUserPosts.stream().map(Post::getId).toList(), otherUserAlbumId, user.getId());
+
+		//when
+		final SlicePageDto<PostPreviewResponse> result = albumService.getPostPreviewsOfAlbum(albumPostsSearchCond);
+
+		//then
+		final List<Long> expecPostIds = posts.stream().map(Post::getId).sorted(Comparator.reverseOrder()).toList();
+		final List<Long> resultPostIds = result.content().stream().map(PostPreviewResponse::postId).toList();
+		assertThat(resultPostIds).isEqualTo(expecPostIds);
 	}
 }
