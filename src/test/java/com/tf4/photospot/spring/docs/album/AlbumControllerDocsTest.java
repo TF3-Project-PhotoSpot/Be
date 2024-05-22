@@ -20,6 +20,7 @@ import com.tf4.photospot.album.application.response.CreateAlbumPostResponse;
 import com.tf4.photospot.album.presentation.AlbumController;
 import com.tf4.photospot.album.presentation.request.CreateAlbumHttpRequest;
 import com.tf4.photospot.album.presentation.request.PostIdListHttpRequest;
+import com.tf4.photospot.album.presentation.request.RenameAlbumHttpRequest;
 import com.tf4.photospot.global.dto.SlicePageDto;
 import com.tf4.photospot.post.application.PostService;
 import com.tf4.photospot.post.application.request.PostSearchCondition;
@@ -252,5 +253,23 @@ public class AlbumControllerDocsTest extends RestDocsSupport {
 					fieldWithPath("albums[].photoUrl").type(JsonFieldType.STRING).description("앨범 미리보기 이미지 url")
 						.attributes(defaultValue("\"\""))
 				)));
+	}
+
+	@Test
+	void renameAlbum() throws Exception {
+		//given
+		var request = new RenameAlbumHttpRequest("newName");
+		var requestBody = mapper.writeValueAsString(request);
+		willDoNothing().given(albumService).rename(anyLong(), anyLong(), anyString());
+		//when
+		mockMvc.perform(patch("/api/v1/albums/{albumId}", 1L)
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON)
+				.content(requestBody))
+			.andExpect(status().isOk())
+			.andDo(restDocsTemplate(
+				pathParameters(parameterWithName("albumId").description("앨범 ID")),
+				responseFields(fieldWithPath("message").type(JsonFieldType.STRING).description("성공")))
+			);
 	}
 }

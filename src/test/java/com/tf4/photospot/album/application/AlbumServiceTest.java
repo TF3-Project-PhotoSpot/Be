@@ -27,6 +27,7 @@ import com.tf4.photospot.album.domain.AlbumUser;
 import com.tf4.photospot.album.domain.AlbumUserRepository;
 import com.tf4.photospot.album.infrastructure.AlbumQueryRepository;
 import com.tf4.photospot.global.dto.SlicePageDto;
+import com.tf4.photospot.global.exception.domain.AlbumErrorCode;
 import com.tf4.photospot.post.application.request.PostSearchCondition;
 import com.tf4.photospot.post.application.request.PostSearchType;
 import com.tf4.photospot.post.application.response.PostPreviewResponse;
@@ -335,5 +336,38 @@ class AlbumServiceTest extends IntegrationTestSupport {
 		final List<Long> expecPostIds = posts.stream().map(Post::getId).sorted(Comparator.reverseOrder()).toList();
 		final List<Long> resultPostIds = result.content().stream().map(PostPreviewResponse::postId).toList();
 		assertThat(resultPostIds).isEqualTo(expecPostIds);
+	}
+
+	@DisplayName("앨범 이름을 변경한다.")
+	@Test
+	void renameAlbum() {
+		//given
+		final String albumNameBeforeChange = "albumA";
+		final String albumNameAfterChange = "albumB";
+		final User user = userRepository.save(createUser("user"));
+		final Long albumId = albumService.create(user.getId(), albumNameBeforeChange);
+		//when
+		albumService.rename(albumId, user.getId(), albumNameAfterChange);
+		em.flush();
+		em.clear();
+		//then
+		assertThat(albumRepository.findById(albumId)).isPresent()
+			.get()
+			.extracting("name")
+			.isEqualTo(albumNameAfterChange);
+	}
+
+	@DisplayName("내 앨범만 변경할 수 있다.")
+	@Test
+	void renameOnlyMyAlbum() {
+		//given
+		final User user = userRepository.save(createUser("user"));
+		final User otherUser = userRepository.save(createUser("otherUser"));
+		final Long otherUserAlbumId = albumService.create(otherUser.getId(), "albumName");
+		//when
+
+		assertThatThrownBy(() -> albumService.rename(otherUserAlbumId, user.getId(), "newName"))
+			.extracting("errorCode")
+			.isEqualTo(AlbumErrorCode.NO_AUTHORITY_ALBUM);
 	}
 }

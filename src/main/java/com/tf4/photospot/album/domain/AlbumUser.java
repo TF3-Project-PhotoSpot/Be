@@ -39,4 +39,8 @@ public class AlbumUser extends BaseEntity {
 		this.user = user;
 		this.album = album;
 	}
+
+	public void renameAlbum(String newName) {
+		album.rename(this, newName);
+	}
 }
