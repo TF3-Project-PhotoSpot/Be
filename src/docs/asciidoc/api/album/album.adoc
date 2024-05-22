@@ -60,3 +60,11 @@ include::{snippets}/album-controller-docs-test/remove-album/response-body.adoc[]
 include::{snippets}/album-controller-docs-test/get-albums/http-request.adoc[]
 include::{snippets}/album-controller-docs-test/get-albums/response-body.adoc[]
 include::{snippets}/album-controller-docs-test/get-albums/response-fields.adoc[]
+
+=== 앨범 이름 수정
+
+'''
+
+include::{snippets}/album-controller-docs-test/rename-album/http-request.adoc[]
+include::{snippets}/album-controller-docs-test/rename-album/path-parameters.adoc[]
+include::{snippets}/album-controller-docs-test/rename-album/response-body.adoc[]
