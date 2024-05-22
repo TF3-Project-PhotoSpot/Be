@@ -97,4 +97,11 @@ public class AlbumService {
 	public List<AlbumPreviewResponse> getAlbums(Long userId) {
 		return albumJdbcRepository.getAlbumPreviews(userId);
 	}
+
+	@Transactional
+	public void rename(Long albumId, Long userId, String newName) {
+		final AlbumUser albumUser = albumQueryRepository.findAlbumUser(albumId, userId)
+			.orElseThrow(() -> new ApiException(AlbumErrorCode.NO_AUTHORITY_ALBUM));
+		albumUser.renameAlbum(newName);
+	}
 }

@@ -1,6 +1,8 @@
 package com.tf4.photospot.album.domain;
 
 import com.tf4.photospot.global.entity.BaseEntity;
+import com.tf4.photospot.global.exception.ApiException;
+import com.tf4.photospot.global.exception.domain.AlbumErrorCode;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -22,5 +24,12 @@ public class Album extends BaseEntity {
 
 	public Album(String name) {
 		this.name = name;
+	}
+
+	public void rename(AlbumUser albumUser, String newName) {
+		if (albumUser.getAlbum() != this) {
+			throw new ApiException(AlbumErrorCode.NO_AUTHORITY_ALBUM);
+		}
+		name = newName;
 	}
 }

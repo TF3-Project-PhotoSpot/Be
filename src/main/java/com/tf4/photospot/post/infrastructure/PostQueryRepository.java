@@ -65,8 +65,8 @@ public class PostQueryRepository extends QueryDslUtils {
 			query.join(postLike).on(postLike.post.eq(post));
 		}
 		if (searchType == PostSearchType.ALBUM_POSTS) {
-			query.join(albumPost).on(albumPost.post.eq(post))
-				.leftJoin(albumUser).on(albumUser.user.eq(post.writer));
+			query.join(albumPost).on(albumPost.post.eq(post));
+			query.leftJoin(albumUser).on(albumUser.user.eq(post.writer).and(albumPost.album.eq(albumUser.album)));
 		}
 		query.where(createPostSearchBuilder(cond));
 		return orderBy(query, getPostSearchPathBase(cond.type()), pageable).toSlice(query, pageable);
@@ -92,8 +92,8 @@ public class PostQueryRepository extends QueryDslUtils {
 			query.leftJoin(postLike).on(postLike.post.eq(post).and(equalsPostLike(cond.userId())));
 		}
 		if (searchType == PostSearchType.ALBUM_POSTS) {
-			query.join(albumPost).on(albumPost.post.eq(post))
-				.leftJoin(albumUser).on(albumUser.user.eq(post.writer));
+			query.join(albumPost).on(albumPost.post.eq(post));
+			query.leftJoin(albumUser).on(albumUser.user.eq(post.writer).and(albumPost.album.eq(albumUser.album)));
 		}
 		query.where(createPostSearchBuilder(cond));
 		return orderBy(query, getPostSearchPathBase(searchType), pageable).toSlice(query, pageable);
@@ -148,7 +148,7 @@ public class PostQueryRepository extends QueryDslUtils {
 			case POSTS_OF_SPOT -> searchBuilder.and(equalsSpot(cond.spotId())).and(canVisible(cond.userId()));
 			case LIKE_POSTS -> searchBuilder.and(equalsPostLike(cond.userId())).and(canVisible(cond.userId()));
 			case ALBUM_POSTS -> searchBuilder.and(equalsAlbum(cond.albumId()))
-				.and((isPublicPost())).or(albumUser.isNotNull());
+				.and(isPublicPost().or(albumUser.isNotNull()));
 		}
 		return searchBuilder;
 	}

@@ -19,6 +19,7 @@ import com.tf4.photospot.album.application.AlbumService;
 import com.tf4.photospot.album.application.response.CreateAlbumPostResponse;
 import com.tf4.photospot.album.presentation.request.CreateAlbumHttpRequest;
 import com.tf4.photospot.album.presentation.request.PostIdListHttpRequest;
+import com.tf4.photospot.album.presentation.request.RenameAlbumHttpRequest;
 import com.tf4.photospot.album.presentation.response.AlbumListPreviewResponse;
 import com.tf4.photospot.album.presentation.response.CreateAlbumHttpResponse;
 import com.tf4.photospot.album.presentation.response.CreateAlbumPostsHttpResponse;
@@ -132,5 +133,15 @@ public class AlbumController {
 			.likePost(postService.getFirstPostImage(likedPostSearch).orElseGet(() -> ""))
 			.albums(albumService.getAlbums(userId))
 			.build();
+	}
+
+	@PatchMapping("/{albumId}")
+	public ApiResponse renameAlbum(
+		@PathVariable(name = "albumId") Long albumId,
+		@RequestBody RenameAlbumHttpRequest request,
+		@AuthUserId Long userId
+	) {
+		albumService.rename(albumId, userId, request.name());
+		return ApiResponse.SUCCESS;
 	}
 }
