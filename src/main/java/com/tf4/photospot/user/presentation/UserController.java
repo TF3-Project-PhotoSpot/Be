@@ -4,6 +4,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
@@ -16,6 +17,7 @@ import com.tf4.photospot.photo.domain.S3Directory;
 import com.tf4.photospot.user.application.UserService;
 import com.tf4.photospot.user.application.response.UserInfoResponse;
 import com.tf4.photospot.user.presentation.request.NicknameUpdateRequest;
+import com.tf4.photospot.user.presentation.request.UserReportRequest;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -46,11 +48,13 @@ public class UserController {
 		return userService.getInfo(userId);
 	}
 
-	@PostMapping("/{offenderId}/report")
+	@PostMapping("/{offenderId}/reports")
 	public ApiResponse reportUser(
-		@AuthUserId Long userId,
-		@PathVariable(name = "offenderId") Long offenderId) {
-		userService.reportUser(userId, offenderId);
+		@AuthUserId Long reporterId,
+		@PathVariable(name = "offenderId") Long offenderId,
+		@RequestBody @Valid UserReportRequest request
+	) {
+		userService.reportUser(reporterId, offenderId, request.reason());
 		return ApiResponse.SUCCESS;
 	}
 }

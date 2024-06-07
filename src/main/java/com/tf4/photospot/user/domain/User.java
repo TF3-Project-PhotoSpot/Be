@@ -60,7 +60,7 @@ public class User extends BaseEntity {
 		return id.equals(userId);
 	}
 
-	public UserReport reportFrom(User reporter) {
-		return new UserReport(reporter, this);
+	public UserReport reportFrom(User reporter, String reason) {
+		return new UserReport(reporter, this, reason);
 	}
 }
