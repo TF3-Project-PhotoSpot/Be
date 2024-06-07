@@ -54,11 +54,11 @@ public class UserService {
 	}
 
 	@Transactional
-	public void reportUser(Long reporterId, Long offenderId) {
+	public void reportUser(Long reporterId, Long offenderId, String reason) {
 		User reporter = getActiveUser(reporterId);
 		User offender = getActiveUser(offenderId);
 		validReport(reporter, offender);
-		UserReport userReport = offender.reportFrom(reporter);
+		UserReport userReport = offender.reportFrom(reporter, reason);
 		userReportRepository.save(userReport);
 	}
 

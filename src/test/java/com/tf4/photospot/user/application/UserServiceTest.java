@@ -98,19 +98,19 @@ public class UserServiceTest extends IntegrationTestSupport {
 				assertFalse(userQueryRepository.existsReport(reporter, offender));
 
 				// when
-				userService.reportUser(reporter.getId(), offender.getId());
+				userService.reportUser(reporter.getId(), offender.getId(), "reason");
 
 				// then
 				assertTrue(userQueryRepository.existsReport(reporter, offender));
 			}),
 			dynamicTest("이미 신고한 사용자를 다시 신고하면 예외를 던진다.", () -> {
 				// when & then
-				assertThatThrownBy(() -> userService.reportUser(reporter.getId(), offender.getId()))
+				assertThatThrownBy(() -> userService.reportUser(reporter.getId(), offender.getId(), "reason"))
 					.isInstanceOf(ApiException.class).hasMessage(UserErrorCode.ALREADY_REPORT.getMessage());
 			}),
 			dynamicTest("본인을 신고하면 예외를 던진다.", () -> {
 				// when & then
-				assertThatThrownBy(() -> userService.reportUser(reporter.getId(), reporter.getId()))
+				assertThatThrownBy(() -> userService.reportUser(reporter.getId(), reporter.getId(), "reason"))
 					.isInstanceOf(ApiException.class).hasMessage(UserErrorCode.CAN_NOT_REPORT_ON_YOUR_OWN.getMessage());
 			})
 		);

@@ -34,9 +34,12 @@ public class UserReport extends BaseEntity {
 	@JoinColumn(name = "offender_id")
 	private User offender;
 
+	private String reason;
+
 	@Builder
-	public UserReport(User reporter, User offender) {
+	public UserReport(User reporter, User offender, String reason) {
 		this.reporter = reporter;
 		this.offender = offender;
+		this.reason = reason;
 	}
 }

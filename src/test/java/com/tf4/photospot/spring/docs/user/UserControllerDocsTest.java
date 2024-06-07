@@ -21,6 +21,7 @@ import com.tf4.photospot.user.application.UserService;
 import com.tf4.photospot.user.application.response.UserInfoResponse;
 import com.tf4.photospot.user.presentation.UserController;
 import com.tf4.photospot.user.presentation.request.NicknameUpdateRequest;
+import com.tf4.photospot.user.presentation.request.UserReportRequest;
 
 public class UserControllerDocsTest extends RestDocsSupport {
 
@@ -87,9 +88,11 @@ public class UserControllerDocsTest extends RestDocsSupport {
 	@Test
 	@DisplayName("사용자 신고")
 	void reportUser() throws Exception {
-		willDoNothing().given(userService).reportUser(anyLong(), anyLong());
+		willDoNothing().given(userService).reportUser(anyLong(), anyLong(), anyString());
 
-		mockMvc.perform(post("/api/v1/users/{offenderId}/report", 2L))
+		mockMvc.perform(post("/api/v1/users/{offenderId}/reports", 2L)
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(mapper.writeValueAsString(new UserReportRequest("reason"))))
 			.andExpect(status().isOk())
 			.andDo(restDocsTemplate(
 				responseFields(fieldWithPath("message").type(JsonFieldType.STRING).description("성공"))
