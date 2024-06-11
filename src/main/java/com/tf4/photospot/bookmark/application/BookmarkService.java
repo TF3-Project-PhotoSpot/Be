@@ -14,6 +14,7 @@ import com.tf4.photospot.bookmark.application.request.ReadBookmarkFolderList;
 import com.tf4.photospot.bookmark.application.response.BookmarkCoord;
 import com.tf4.photospot.bookmark.application.response.BookmarkFolderResponse;
 import com.tf4.photospot.bookmark.application.response.BookmarkListResponse;
+import com.tf4.photospot.bookmark.application.response.BookmarkOfSpotResponse;
 import com.tf4.photospot.bookmark.application.response.BookmarkResponse;
 import com.tf4.photospot.bookmark.domain.Bookmark;
 import com.tf4.photospot.bookmark.domain.BookmarkFolder;
@@ -103,5 +104,9 @@ public class BookmarkService {
 
 	public List<BookmarkCoord> getAllMyBookmarkCoord(Long userId) {
 		return bookmarkQueryRepository.findAllMyBookmarkCoord(userId);
+	}
+
+	public List<BookmarkOfSpotResponse> findBookmarksOfSpot(Long spotId, Long userId) {
+		return bookmarkQueryRepository.findBookmarksOfSpot(spotId, userId);
 	}
 }

@@ -14,6 +14,8 @@ import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Point;
 import org.springframework.restdocs.payload.JsonFieldType;
 
+import com.tf4.photospot.bookmark.application.BookmarkService;
+import com.tf4.photospot.bookmark.application.response.BookmarkOfSpotResponse;
 import com.tf4.photospot.global.dto.CoordinateDto;
 import com.tf4.photospot.map.application.MapService;
 import com.tf4.photospot.post.application.request.PostSearchCondition;
@@ -40,10 +42,11 @@ public class SpotControllerDocsTest extends RestDocsSupport {
 
 	private final SpotService spotService = mock(SpotService.class);
 	private final MapService mapService = mock(MapService.class);
+	private final BookmarkService bookmarkService = mock(BookmarkService.class);
 
 	@Override
 	protected Object initController() {
-		return new SpotController(spotService, mapService);
+		return new SpotController(spotService, mapService, bookmarkService);
 	}
 
 	@DisplayName("내가 작성한 방명록의 스팟 목록을 조회한다.")
@@ -74,6 +77,9 @@ public class SpotControllerDocsTest extends RestDocsSupport {
 		SpotResponse spotResponse = createSpotResponse();
 		given(mapService.searchDistanceBetween(any(Point.class), any(Point.class))).willReturn(100);
 		given(spotService.findSpot(any(PostSearchCondition.class), anyInt())).willReturn(spotResponse);
+		given(bookmarkService.findBookmarksOfSpot(anyLong(), anyLong())).willReturn(List.of(
+			new BookmarkOfSpotResponse(1L, "name", "color", 1L)
+		));
 		//when
 		mockMvc.perform(get("/api/v1/spots/{spotId}", spotResponse.id())
 				.queryParam("lon", String.valueOf(DEFAULT_COORD.lon()))
@@ -110,7 +116,11 @@ public class SpotControllerDocsTest extends RestDocsSupport {
 					fieldWithPath("tags[].iconUrl").type(JsonFieldType.STRING).description("태그 아이콘 url"),
 					fieldWithPath("photoUrls").type(JsonFieldType.ARRAY).description("최신 방명록 사진")
 						.attributes(defaultValue("emptyList")),
-					fieldWithPath("bookmarked").type(JsonFieldType.BOOLEAN).description("북마크 등록 여부")
+					fieldWithPath("bookmarks").type(JsonFieldType.ARRAY).description("장소에 대한 유저의 북마크 정보"),
+					fieldWithPath("bookmarks[].bookmarkFolderId").type(JsonFieldType.NUMBER).description("북마크폴더 ID"),
+					fieldWithPath("bookmarks[].name").type(JsonFieldType.STRING).description("북마크 폴더 이름"),
+					fieldWithPath("bookmarks[].color").type(JsonFieldType.STRING).description("북마크 폴더 색깔"),
+					fieldWithPath("bookmarks[].bookmarkId").type(JsonFieldType.NUMBER).description("북마크 ID")
 				)));
 	}
 
@@ -127,7 +137,6 @@ public class SpotControllerDocsTest extends RestDocsSupport {
 				MostPostTagRank.builder().id(1L).count(5).name("tagName").iconUrl("iconUrl").build(),
 				MostPostTagRank.builder().id(2L).count(10).name("tagName2").iconUrl("iconUrl2").build()
 			))
-			.bookmarked(false)
 			.build();
 	}
 

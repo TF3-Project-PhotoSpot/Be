@@ -24,8 +24,6 @@ import org.locationtech.jts.geom.Point;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 
-import com.tf4.photospot.bookmark.domain.Bookmark;
-import com.tf4.photospot.bookmark.domain.BookmarkFolder;
 import com.tf4.photospot.bookmark.domain.BookmarkFolderRepository;
 import com.tf4.photospot.bookmark.domain.BookmarkRepository;
 import com.tf4.photospot.photo.domain.Photo;
@@ -122,18 +120,6 @@ class SpotServiceTest extends IntegrationTestSupport {
 				assertThat(response.address()).isEqualTo("address");
 				assertThatObject(response.coord()).isEqualTo(coord);
 				assertThat(response.postCount()).isEqualTo(5);
-				assertThat(response.bookmarked()).isFalse();
-			}),
-			dynamicTest("북마크 등록 여부를 알려준다.", () -> {
-				//given
-				BookmarkFolder defaultBookmark = BookmarkFolder.createDefaultBookmark(user);
-				bookmarkFolderRepository.save(defaultBookmark);
-				Bookmark spotBookmark = createSpotBookmark(user, spot, defaultBookmark);
-				bookmarkRepository.save(spotBookmark);
-				//when
-				SpotResponse response = spotService.findSpot(searchCondition, 3);
-				//then
-				assertThat(response.bookmarked()).isTrue();
 			}),
 			dynamicTest("최신 방명록 미리보기를 조회한다.", () -> {
 				//given

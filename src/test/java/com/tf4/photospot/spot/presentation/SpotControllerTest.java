@@ -22,6 +22,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultMatcher;
 
+import com.tf4.photospot.bookmark.application.BookmarkService;
 import com.tf4.photospot.global.dto.CoordinateDto;
 import com.tf4.photospot.map.application.MapService;
 import com.tf4.photospot.mockobject.WithCustomMockUser;
@@ -41,6 +42,9 @@ class SpotControllerTest {
 
 	@MockBean
 	private MapService mapService;
+
+	@MockBean
+	private BookmarkService bookmarkService;
 
 	@Autowired
 	private MockMvc mockMvc;
