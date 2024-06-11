@@ -32,6 +32,7 @@ import com.tf4.photospot.photo.domain.Photo;
 import com.tf4.photospot.post.application.request.PostSearchCondition;
 import com.tf4.photospot.post.application.request.PostSearchType;
 import com.tf4.photospot.post.application.response.PostPreviewResponse;
+import com.tf4.photospot.post.application.response.RecentPostPreviewResponse;
 import com.tf4.photospot.post.domain.Post;
 import com.tf4.photospot.post.domain.PostRepository;
 import com.tf4.photospot.post.domain.PostTagRepository;
@@ -197,7 +198,7 @@ class SpotServiceTest extends IntegrationTestSupport {
 				//then
 				assertThat(response.recommendedSpots()).isNotEmpty().allSatisfy(recommendedSpot ->
 					assertThat(recommendedSpot.postPreviewResponses())
-						.isSortedAccordingTo(comparingLong(PostPreviewResponse::postId).reversed())
+						.isSortedAccordingTo(comparingLong(RecentPostPreviewResponse::postId).reversed())
 				);
 			}),
 			dynamicTest("다음 추천 스팟 목록이 있으면 hasNext = true를 반환한다", () -> {
@@ -273,11 +274,11 @@ class SpotServiceTest extends IntegrationTestSupport {
 		//when
 		var postPreviewsGroupBySpot = spotService.getRecentPostPreviewsInSpots(List.of(spot1, spot2), 5)
 			.stream()
-			.collect(Collectors.groupingBy(PostPreviewResponse::spotId))
+			.collect(Collectors.groupingBy(RecentPostPreviewResponse::spotId))
 			.values();
 		//then
 		assertThat(postPreviewsGroupBySpot).isNotEmpty().allSatisfy(postPreviews ->
-			assertThat(postPreviews).isSortedAccordingTo(comparingLong(PostPreviewResponse::postId).reversed()));
+			assertThat(postPreviews).isSortedAccordingTo(comparingLong(RecentPostPreviewResponse::postId).reversed()));
 	}
 
 	@DisplayName("스팟의 태그 통계를 조회한다.")

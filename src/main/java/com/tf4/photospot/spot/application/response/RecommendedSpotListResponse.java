@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Slice;
 
-import com.tf4.photospot.post.application.response.PostPreviewResponse;
+import com.tf4.photospot.post.application.response.RecentPostPreviewResponse;
 import com.tf4.photospot.spot.domain.Spot;
 
 import lombok.Builder;
@@ -21,9 +21,9 @@ public record RecommendedSpotListResponse(
 		return new RecommendedSpotListResponse(Collections.emptyList(), false);
 	}
 
-	public static RecommendedSpotListResponse of(Slice<Spot> spots, List<PostPreviewResponse> postPreviews) {
-		Map<Long, List<PostPreviewResponse>> spotPostPreviews = postPreviews.stream()
-			.collect(Collectors.groupingBy(PostPreviewResponse::spotId));
+	public static RecommendedSpotListResponse of(Slice<Spot> spots, List<RecentPostPreviewResponse> postPreviews) {
+		Map<Long, List<RecentPostPreviewResponse>> spotPostPreviews = postPreviews.stream()
+			.collect(Collectors.groupingBy(RecentPostPreviewResponse::spotId));
 		return RecommendedSpotListResponse.builder()
 			.recommendedSpots(spots.stream()
 				.map(spot -> RecommendedSpotResponse.of(

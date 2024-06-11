@@ -57,7 +57,6 @@ public class TestFixture {
 	}
 
 	public static Post createPost(Spot spot, User user, boolean isPrivate) {
-		spot.incPostCount();
 		return createPost(spot, user, createPhoto(), 0, isPrivate);
 	}
 

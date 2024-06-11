@@ -25,7 +25,7 @@ import org.springframework.test.web.servlet.ResultMatcher;
 import com.tf4.photospot.global.dto.CoordinateDto;
 import com.tf4.photospot.map.application.MapService;
 import com.tf4.photospot.mockobject.WithCustomMockUser;
-import com.tf4.photospot.post.application.response.PostPreviewResponse;
+import com.tf4.photospot.post.application.response.RecentPostPreviewResponse;
 import com.tf4.photospot.spot.application.SpotService;
 import com.tf4.photospot.spot.application.request.NearbySpotRequest;
 import com.tf4.photospot.spot.application.request.RecommendedSpotsRequest;
@@ -111,9 +111,9 @@ class SpotControllerTest {
 			.coord(new CoordinateDto(127.0, 37.0))
 			.postCount(5L)
 			.postPreviewResponses(List.of(
-				new PostPreviewResponse(1L, 1L, "profileUrl"),
-				new PostPreviewResponse(1L, 1L, "profileUrl"),
-				new PostPreviewResponse(1L, 1L, "profileUrl")))
+				new RecentPostPreviewResponse(1L, 1L, "profileUrl"),
+				new RecentPostPreviewResponse(1L, 1L, "profileUrl"),
+				new RecentPostPreviewResponse(1L, 1L, "profileUrl")))
 			.build();
 	}
 

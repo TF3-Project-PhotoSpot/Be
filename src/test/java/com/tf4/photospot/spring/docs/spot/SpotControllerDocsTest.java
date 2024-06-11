@@ -18,6 +18,7 @@ import com.tf4.photospot.global.dto.CoordinateDto;
 import com.tf4.photospot.map.application.MapService;
 import com.tf4.photospot.post.application.request.PostSearchCondition;
 import com.tf4.photospot.post.application.response.PostPreviewResponse;
+import com.tf4.photospot.post.application.response.RecentPostPreviewResponse;
 import com.tf4.photospot.spot.application.SpotService;
 import com.tf4.photospot.spot.application.request.NearbySpotRequest;
 import com.tf4.photospot.spot.application.request.RecommendedSpotsRequest;
@@ -120,8 +121,8 @@ public class SpotControllerDocsTest extends RestDocsSupport {
 			.coord(DEFAULT_COORD.toCoord())
 			.postCount(2L)
 			.previewResponses(List.of(
-				new PostPreviewResponse(1L, 2L, "photoUrl2"),
-				new PostPreviewResponse(1L, 1L, "photoUrl1")))
+				new PostPreviewResponse(1L, 2L, 1L, "photoUrl2", false),
+				new PostPreviewResponse(1L, 1L, 1L, "photoUrl1", false)))
 			.mostPostTagRanks(List.of(
 				MostPostTagRank.builder().id(1L).count(5).name("tagName").iconUrl("iconUrl").build(),
 				MostPostTagRank.builder().id(2L).count(10).name("tagName2").iconUrl("iconUrl2").build()
@@ -140,7 +141,7 @@ public class SpotControllerDocsTest extends RestDocsSupport {
 			.postCount(10L)
 			.coord(DEFAULT_COORD)
 			.postPreviewResponses(List.of(
-				new PostPreviewResponse(3L, 1L, "image3.com")))
+				new RecentPostPreviewResponse(3L, 1L, "image3.com")))
 			.build());
 		RecommendedSpotListResponse recommendedSpotsResponse = RecommendedSpotListResponse.builder()
 			.recommendedSpots(recommendedSpotResponses)
