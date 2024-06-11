@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -27,6 +28,7 @@ import com.tf4.photospot.bookmark.presentation.request.AddBookmarkHttpRequest;
 import com.tf4.photospot.bookmark.presentation.request.CreateBookmarkFolderHttpRequest;
 import com.tf4.photospot.bookmark.presentation.request.ReadBookmarkRequest;
 import com.tf4.photospot.bookmark.presentation.request.RemoveBookmarkHttpRequest;
+import com.tf4.photospot.bookmark.presentation.request.UpdateBookmarkFolderHttpRequest;
 import com.tf4.photospot.bookmark.presentation.response.AddBookmarkHttpResponse;
 import com.tf4.photospot.bookmark.presentation.response.BookmarkCoordFolderHttpResponse;
 import com.tf4.photospot.bookmark.presentation.response.BookmarkCoordFolderListHttpResponse;
@@ -132,5 +134,18 @@ public class BookmarkController {
 		final List<BookmarkCoordFolderHttpResponse> bookmarkFolders = BookmarkCoordFolderHttpResponse.from(
 			bookmarkService.getAllMyBookmarkCoord(userId));
 		return new BookmarkCoordFolderListHttpResponse(bookmarkFolders);
+	}
+
+	@PutMapping("/{bookmarkFolderId}")
+	public ApiResponse updateBookmarkFolderName(
+		@PathVariable(name = "bookmarkFolderId") Long bookmarkFolderId,
+		@RequestBody @Valid UpdateBookmarkFolderHttpRequest request
+	) {
+		bookmarkService.updateBookmarkFolder(
+			bookmarkFolderId,
+			request.name(),
+			request.description(),
+			request.color());
+		return ApiResponse.SUCCESS;
 	}
 }

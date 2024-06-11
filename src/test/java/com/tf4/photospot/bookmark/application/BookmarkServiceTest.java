@@ -267,4 +267,51 @@ class BookmarkServiceTest extends IntegrationTestSupport {
 		//then
 		assertThat(bookmarksOfSpot).isEmpty();
 	}
+
+	@DisplayName("북마크 폴더를 수정한다.")
+	@Test
+	void updateBookmarkFolder() {
+		//given
+		String newName = "newName";
+		String newDescription = "newDescription";
+		String newColor = "newColor";
+		final User user = userRepository.save(createUser("bean"));
+		final BookmarkFolder bookmarkFolder = bookmarkFolderRepository.save(BookmarkFolder.builder()
+			.user(user)
+			.name("name")
+			.description("description")
+			.color("color")
+			.totalCount(0)
+			.build());
+		//when
+		bookmarkService.updateBookmarkFolder(bookmarkFolder.getId(),
+			newName, newDescription, newColor);
+		em.flush();
+		em.clear();
+		//then
+		assertThat(bookmarkFolderRepository.findById(bookmarkFolder.getId()))
+			.isPresent()
+			.get()
+			.extracting("name", "description", "color")
+			.containsExactly(newName, newDescription, newColor);
+	}
+
+	@DisplayName("북마크 폴더 수정 시 폴더를 찾을 수 없으면 INVALID_BOOKMARK_FOLDER_ID 예외가 발생한다.")
+	@Test
+	void updateFailNotFoundBookmarkFolder() {
+		//given
+		final User user = userRepository.save(createUser("bean"));
+		final BookmarkFolder bookmarkFolder = bookmarkFolderRepository.save(BookmarkFolder.builder()
+			.user(user)
+			.name("name")
+			.description("description")
+			.color("color")
+			.totalCount(0)
+			.build());
+		//when
+		//then
+		assertThatThrownBy(() -> bookmarkService.updateBookmarkFolder(bookmarkFolder.getId() + 1,
+			"name", "des", "color"))
+			.hasMessage(BookmarkErrorCode.INVALID_BOOKMARK_FOLDER_ID.getMessage());
+	}
 }

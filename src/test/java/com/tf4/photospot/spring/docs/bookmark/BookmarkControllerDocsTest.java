@@ -7,6 +7,7 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import java.util.List;
@@ -29,6 +30,7 @@ import com.tf4.photospot.bookmark.presentation.request.AddBookmarkHttpRequest;
 import com.tf4.photospot.bookmark.presentation.request.CreateBookmarkFolderHttpRequest;
 import com.tf4.photospot.bookmark.presentation.request.ReadBookmarkRequest;
 import com.tf4.photospot.bookmark.presentation.request.RemoveBookmarkHttpRequest;
+import com.tf4.photospot.bookmark.presentation.request.UpdateBookmarkFolderHttpRequest;
 import com.tf4.photospot.global.dto.CoordinateDto;
 import com.tf4.photospot.spring.docs.RestDocsSupport;
 
@@ -228,5 +230,29 @@ public class BookmarkControllerDocsTest extends RestDocsSupport {
 					fieldWithPath("bookmarkFolders[].bookmarks[].coord.lat").type(JsonFieldType.NUMBER)
 						.description("위도")
 				)));
+	}
+
+	@Test
+	void updateBookmarkFolder() throws Exception {
+		//given
+		var request = new UpdateBookmarkFolderHttpRequest("newName", "newDescription",
+			"newColor");
+		willDoNothing()
+			.given(bookmarkService)
+			.updateBookmarkFolder(anyLong(), anyString(), anyString(), anyString());
+		//when
+		mockMvc.perform(put("/api/v1/bookmarkFolders/{bookmarkFolderId}", 1L)
+				.content(mapper.writeValueAsString(request))
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON))
+			.andExpect(status().isOk())
+			.andDo(restDocsTemplate(
+				requestFields(
+					fieldWithPath("name").type(JsonFieldType.STRING).description("이름"),
+					fieldWithPath("description").type(JsonFieldType.STRING).description("설명"),
+					fieldWithPath("color").type(JsonFieldType.STRING).description("색깔")
+				),
+				responseFields(fieldWithPath("message").type(JsonFieldType.STRING).description("성공")))
+			);
 	}
 }
