@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.tf4.photospot.global.dto.CoordinateDto;
 import com.tf4.photospot.global.util.PointConverter;
-import com.tf4.photospot.post.application.response.PostPreviewResponse;
+import com.tf4.photospot.post.application.response.RecentPostPreviewResponse;
 import com.tf4.photospot.spot.domain.Spot;
 
 import lombok.Builder;
@@ -15,9 +15,9 @@ public record RecommendedSpotResponse(
 	String address,
 	Long postCount,
 	CoordinateDto coord,
-	List<PostPreviewResponse> postPreviewResponses
+	List<RecentPostPreviewResponse> postPreviewResponses
 ) {
-	public static RecommendedSpotResponse of(Spot spot, List<PostPreviewResponse> postPreviewResponses) {
+	public static RecommendedSpotResponse of(Spot spot, List<RecentPostPreviewResponse> postPreviewResponses) {
 		return RecommendedSpotResponse.builder()
 			.id(spot.getId())
 			.address(spot.getAddress())

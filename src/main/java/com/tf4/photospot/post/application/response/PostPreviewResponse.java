@@ -7,7 +7,9 @@ public record PostPreviewResponse(
 	@JsonIgnore
 	Long spotId,
 	Long postId,
-	String photoUrl
+	Long writerId,
+	String photoUrl,
+	Boolean isPrivate
 ) {
 	@QueryProjection
 	public PostPreviewResponse {

@@ -52,7 +52,7 @@ public class PostControllerDocsTest extends RestDocsSupport {
 	void getPostPreviews() throws Exception {
 		//given
 		var response = SlicePageDto.wrap(List.of(
-			new PostPreviewResponse(1L, 1L, "photoUrl")), false);
+			new PostPreviewResponse(1L, 1L, 1L, "photoUrl", false)), false);
 		given(postService.getPostPreviews(any(PostSearchCondition.class))).willReturn(response);
 		//when
 		mockMvc.perform(get("/api/v1/posts/preview")
@@ -76,6 +76,8 @@ public class PostControllerDocsTest extends RestDocsSupport {
 					fieldWithPath("content").type(JsonFieldType.ARRAY).description("방명록 상세 목록 리스트")
 						.attributes(defaultValue("emptyList")),
 					fieldWithPath("content[].postId").type(JsonFieldType.NUMBER).description("방명록 ID"),
+					fieldWithPath("content[].writerId").type(JsonFieldType.NUMBER).description("작성자 ID"),
+					fieldWithPath("content[].isPrivate").type(JsonFieldType.BOOLEAN).description("비공개 여부"),
 					fieldWithPath("content[].photoUrl").type(JsonFieldType.STRING).description("방명록 photo url"),
 					fieldWithPath("hasNext").type(JsonFieldType.BOOLEAN).description("다음 방명록 여부")
 				)));
@@ -89,6 +91,7 @@ public class PostControllerDocsTest extends RestDocsSupport {
 			.address("spot address")
 			.detailAddress("detail address")
 			.likeCount(10)
+			.isPrivate(false)
 			.photoUrl("photoUrl")
 			.bubble(new BubbleResponse("이미지 설명", 100, 200))
 			.isLiked(true)
@@ -128,6 +131,7 @@ public class PostControllerDocsTest extends RestDocsSupport {
 					fieldWithPath("content[].bubble.y").type(JsonFieldType.NUMBER).description("bubble 위치 y 좌표"),
 					fieldWithPath("content[].isLiked").type(JsonFieldType.BOOLEAN)
 						.description("방명록 좋아요 여부"),
+					fieldWithPath("content[].isPrivate").type(JsonFieldType.BOOLEAN).description("비공개 여부"),
 					fieldWithPath("content[].createdAt").type(JsonFieldType.STRING).description("방명록 생성일")
 						.description("생성"),
 					fieldWithPath("content[].writer.id").type(JsonFieldType.NUMBER).description("작성자 ID"),
@@ -149,7 +153,7 @@ public class PostControllerDocsTest extends RestDocsSupport {
 	void getMyPostPreviews() throws Exception {
 		//given
 		var response = SlicePageDto.wrap(List.of(
-			new PostPreviewResponse(1L, 1L, "photoUrl")), false);
+			new PostPreviewResponse(1L, 1L, 1L, "photoUrl", false)), false);
 		given(postService.getPostPreviews(any(PostSearchCondition.class))).willReturn(response);
 		//when
 		mockMvc.perform(get("/api/v1/posts/mine/preview")
@@ -170,7 +174,9 @@ public class PostControllerDocsTest extends RestDocsSupport {
 					fieldWithPath("content").type(JsonFieldType.ARRAY).description("방명록 상세 목록 리스트")
 						.attributes(defaultValue("emptyList")),
 					fieldWithPath("content[].postId").type(JsonFieldType.NUMBER).description("방명록 ID"),
+					fieldWithPath("content[].writerId").type(JsonFieldType.NUMBER).description("작성자 ID"),
 					fieldWithPath("content[].photoUrl").type(JsonFieldType.STRING).description("방명록 photo url"),
+					fieldWithPath("content[].isPrivate").type(JsonFieldType.BOOLEAN).description("비공개 여부"),
 					fieldWithPath("hasNext").type(JsonFieldType.BOOLEAN).description("다음 방명록 여부")
 				)));
 	}
@@ -184,6 +190,7 @@ public class PostControllerDocsTest extends RestDocsSupport {
 			.detailAddress("detail address")
 			.likeCount(10)
 			.photoUrl("photoUrl")
+			.isPrivate(false)
 			.bubble(new BubbleResponse("이미지 설명", 100, 200))
 			.isLiked(true)
 			.createdAt(LocalDateTime.of(2024, 1, 10, 12, 30))
@@ -216,6 +223,7 @@ public class PostControllerDocsTest extends RestDocsSupport {
 					fieldWithPath("content[].photoUrl").type(JsonFieldType.STRING).description("방명록 photo url"),
 					fieldWithPath("content[].isLiked").type(JsonFieldType.BOOLEAN)
 						.description("방명록 좋아요 여부"),
+					fieldWithPath("content[].isPrivate").type(JsonFieldType.BOOLEAN).description("비공개 여부"),
 					fieldWithPath("content[].createdAt").type(JsonFieldType.STRING).description("방명록 생성일")
 						.description("생성"),
 					fieldWithPath("content[].writer.id").type(JsonFieldType.NUMBER).description("작성자 ID"),
@@ -241,7 +249,7 @@ public class PostControllerDocsTest extends RestDocsSupport {
 	void getLikePostPreviews() throws Exception {
 		//given
 		var response = SlicePageDto.wrap(List.of(
-			new PostPreviewResponse(1L, 1L, "photoUrl")), false);
+			new PostPreviewResponse(1L, 1L, 1L, "photoUrl", false)), false);
 		given(postService.getPostPreviews(any(PostSearchCondition.class))).willReturn(response);
 		//when
 		mockMvc.perform(get("/api/v1/posts/likes/preview")
@@ -262,7 +270,9 @@ public class PostControllerDocsTest extends RestDocsSupport {
 					fieldWithPath("content").type(JsonFieldType.ARRAY).description("방명록 상세 목록 리스트")
 						.attributes(defaultValue("emptyList")),
 					fieldWithPath("content[].postId").type(JsonFieldType.NUMBER).description("방명록 ID"),
+					fieldWithPath("content[].writerId").type(JsonFieldType.NUMBER).description("작성자 ID"),
 					fieldWithPath("content[].photoUrl").type(JsonFieldType.STRING).description("방명록 photo url"),
+					fieldWithPath("content[].isPrivate").type(JsonFieldType.BOOLEAN).description("비공개 여부"),
 					fieldWithPath("hasNext").type(JsonFieldType.BOOLEAN).description("다음 방명록 여부")
 				)));
 	}
@@ -275,6 +285,7 @@ public class PostControllerDocsTest extends RestDocsSupport {
 			.address("spot address")
 			.detailAddress("detail address")
 			.likeCount(10)
+			.isPrivate(false)
 			.photoUrl("photoUrl")
 			.bubble(new BubbleResponse("이미지 설명", 100, 200))
 			.isLiked(true)
@@ -310,6 +321,7 @@ public class PostControllerDocsTest extends RestDocsSupport {
 						.description("방명록 좋아요 여부"),
 					fieldWithPath("content[].createdAt").type(JsonFieldType.STRING).description("방명록 생성일")
 						.description("생성"),
+					fieldWithPath("content[].isPrivate").type(JsonFieldType.BOOLEAN).description("비공개 여부"),
 					fieldWithPath("content[].writer.id").type(JsonFieldType.NUMBER).description("작성자 ID"),
 					fieldWithPath("content[].writer.isWriter").type(JsonFieldType.BOOLEAN).description("작성자 본인 여부"),
 					fieldWithPath("content[].writer.nickname").type(JsonFieldType.STRING).description("작성자 닉네임"),

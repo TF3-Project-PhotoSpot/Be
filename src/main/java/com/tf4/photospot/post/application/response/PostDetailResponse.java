@@ -15,6 +15,7 @@ public record PostDetailResponse(
 	int likeCount,
 	String photoUrl,
 	Boolean isLiked,
+	Boolean isPrivate,
 	LocalDateTime createdAt,
 	BubbleResponse bubble,
 	WriterResponse writer,
@@ -36,6 +37,7 @@ public record PostDetailResponse(
 			.createdAt(post.getCreatedAt())
 			.writer(WriterResponse.from(post.getWriter(), userId))
 			.isLiked(postDetail.isLiked())
+			.isPrivate(postDetail.isPrivate())
 			.tags(postTags.stream().map(TagResponse::from).toList())
 			.build();
 	}

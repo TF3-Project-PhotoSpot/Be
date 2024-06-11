@@ -6,7 +6,8 @@ import com.tf4.photospot.post.domain.Post;
 public record PostDetail(
 	Post post,
 	String spotAddress,
-	Boolean isLiked
+	Boolean isLiked,
+	Boolean isPrivate
 ) {
 	@QueryProjection
 	public PostDetail {
