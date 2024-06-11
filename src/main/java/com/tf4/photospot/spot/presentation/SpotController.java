@@ -1,5 +1,7 @@
 package com.tf4.photospot.spot.presentation;
 
+import java.util.List;
+
 import org.hibernate.validator.constraints.Range;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -12,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.tf4.photospot.bookmark.application.BookmarkService;
+import com.tf4.photospot.bookmark.application.response.BookmarkOfSpotResponse;
 import com.tf4.photospot.global.argument.AuthUserId;
 import com.tf4.photospot.global.dto.CoordinateDto;
 import com.tf4.photospot.global.util.PointConverter;
@@ -43,6 +47,7 @@ import lombok.extern.slf4j.Slf4j;
 public class SpotController {
 	private final SpotService spotService;
 	private final MapService mapService;
+	private final BookmarkService bookmarkService;
 
 	@GetMapping("/recommended")
 	public RecommendedSpotListHttpResponse getSpotList(
@@ -82,11 +87,12 @@ public class SpotController {
 			.pageable(PageRequest.of(0, request.postPreviewCount(), sortByLatest))
 			.type(PostSearchType.POSTS_OF_SPOT)
 			.build();
-		SpotResponse spotResponse = spotService.findSpot(postSearchCond, request.mostPostTagCount());
+		final SpotResponse spotResponse = spotService.findSpot(postSearchCond, request.mostPostTagCount());
+		final List<BookmarkOfSpotResponse> bookmarksOfSpot = bookmarkService.findBookmarksOfSpot(spotId, userId);
 		if (request.requireDistance()) {
 			distance = mapService.searchDistanceBetween(startingCoord.toCoord(), spotResponse.coord());
 		}
-		return SpotHttpResponse.of(distance, spotResponse);
+		return SpotHttpResponse.of(distance, spotResponse, bookmarksOfSpot);
 	}
 
 	@GetMapping("/mine")

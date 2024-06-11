@@ -65,11 +65,10 @@ public class SpotService {
 	public SpotResponse findSpot(PostSearchCondition searchCond, int mostPostTagCount) {
 		final Spot spot = spotRepository.findById(searchCond.spotId())
 			.orElseThrow(() -> new ApiException(SpotErrorCode.INVALID_SPOT_ID));
-		final Boolean bookmarked = spotQueryRepository.existsBookmark(spot.getId(), searchCond.userId());
 		final Slice<PostPreviewResponse> postPreviews = postQueryRepository.findPostPreviews(searchCond);
 		final List<MostPostTagRank> mostPostTagRanks = postJdbcRepository.findMostPostTagsOfSpot(spot,
 			mostPostTagCount);
-		return SpotResponse.of(spot, bookmarked, mostPostTagRanks, postPreviews.getContent());
+		return SpotResponse.of(spot, mostPostTagRanks, postPreviews.getContent());
 	}
 
 	public List<SpotCoordResponse> findSpotsOfMyPosts(Long userId) {

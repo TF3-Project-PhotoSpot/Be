@@ -2,6 +2,7 @@ package com.tf4.photospot.spot.presentation.response;
 
 import java.util.List;
 
+import com.tf4.photospot.bookmark.application.response.BookmarkOfSpotResponse;
 import com.tf4.photospot.global.dto.CoordinateDto;
 import com.tf4.photospot.global.util.PointConverter;
 import com.tf4.photospot.post.application.response.PostPreviewResponse;
@@ -18,7 +19,7 @@ public record SpotHttpResponse(
 	Long postCount,
 	List<MostPostTagRank> tags,
 	List<String> photoUrls,
-	Boolean bookmarked
+	List<BookmarkOfSpotResponse> bookmarks
 ) {
 	@Builder
 	public SpotHttpResponse {
@@ -27,7 +28,11 @@ public record SpotHttpResponse(
 		}
 	}
 
-	public static SpotHttpResponse of(Integer distance, SpotResponse response) {
+	public static SpotHttpResponse of(
+		Integer distance,
+		SpotResponse response,
+		List<BookmarkOfSpotResponse> bookmarks
+	) {
 		return SpotHttpResponse.builder()
 			.distance(distance)
 			.id(response.id())
@@ -36,7 +41,7 @@ public record SpotHttpResponse(
 			.postCount(response.postCount())
 			.tags(response.mostPostTagRanks())
 			.photoUrls(response.previewResponses().stream().map(PostPreviewResponse::photoUrl).toList())
-			.bookmarked(response.bookmarked())
+			.bookmarks(bookmarks)
 			.build();
 	}
 }
