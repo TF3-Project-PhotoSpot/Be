@@ -83,4 +83,10 @@ public class BookmarkFolder extends BaseEntity {
 		}
 		throw new ApiException(BookmarkErrorCode.NO_AUTHORITY_BOOKMARK_FOLDER);
 	}
+
+	public void update(String newName, String newDescription, String newColor) {
+		name = newName;
+		description = newDescription;
+		color = newColor;
+	}
 }

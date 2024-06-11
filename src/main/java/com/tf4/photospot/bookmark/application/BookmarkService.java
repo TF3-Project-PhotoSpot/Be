@@ -109,4 +109,16 @@ public class BookmarkService {
 	public List<BookmarkOfSpotResponse> findBookmarksOfSpot(Long spotId, Long userId) {
 		return bookmarkQueryRepository.findBookmarksOfSpot(spotId, userId);
 	}
+
+	@Transactional
+	public void updateBookmarkFolder(
+		Long bookmarkFolderId,
+		String newName,
+		String newDescription,
+		String newColor
+	) {
+		final BookmarkFolder bookmarkFolder = bookmarkFolderRepository.findById(bookmarkFolderId)
+			.orElseThrow(() -> new ApiException(BookmarkErrorCode.INVALID_BOOKMARK_FOLDER_ID));
+		bookmarkFolder.update(newName, newDescription, newColor);
+	}
 }
