@@ -4,7 +4,7 @@ import java.util.Collections;
 import java.util.List;
 
 import com.tf4.photospot.bookmark.domain.Bookmark;
-import com.tf4.photospot.post.application.response.PostPreviewResponse;
+import com.tf4.photospot.post.application.response.RecentPostPreviewResponse;
 
 import lombok.Builder;
 import software.amazon.awssdk.utils.CollectionUtils;
@@ -20,7 +20,7 @@ public record BookmarkResponse(
 	public BookmarkResponse {
 	}
 
-	public static BookmarkResponse of(Bookmark bookmark, List<PostPreviewResponse> postPreviewResponses) {
+	public static BookmarkResponse of(Bookmark bookmark, List<RecentPostPreviewResponse> postPreviewResponses) {
 		return BookmarkResponse.builder()
 			.id(bookmark.getId())
 			.spotId(bookmark.getSpotId())
@@ -30,10 +30,10 @@ public record BookmarkResponse(
 			.build();
 	}
 
-	private static List<String> getPhotoUrls(List<PostPreviewResponse> postPreviews) {
+	private static List<String> getPhotoUrls(List<RecentPostPreviewResponse> postPreviews) {
 		if (CollectionUtils.isNullOrEmpty(postPreviews)) {
 			return Collections.emptyList();
 		}
-		return postPreviews.stream().map(PostPreviewResponse::photoUrl).toList();
+		return postPreviews.stream().map(RecentPostPreviewResponse::photoUrl).toList();
 	}
 }

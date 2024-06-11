@@ -56,7 +56,9 @@ public class PostQueryRepository extends QueryDslUtils {
 		var query = queryFactory.select(new QPostPreviewResponse(
 				post.spot.id,
 				post.id,
-				photo.photoUrl
+				post.writer.id,
+				photo.photoUrl,
+				post.isPrivate
 			))
 			.from(post)
 			.join(post.photo, photo)
@@ -79,7 +81,8 @@ public class PostQueryRepository extends QueryDslUtils {
 		var query = queryFactory.select(new QPostDetail(
 				post,
 				spot.address,
-				postLike.isNotNull()))
+				postLike.isNotNull(),
+				post.isPrivate))
 			.from(post)
 			.join(post.spot, spot)
 			.join(post.writer, writer).fetchJoin()
@@ -114,7 +117,8 @@ public class PostQueryRepository extends QueryDslUtils {
 		return queryFactory.select(new QPostDetail(
 				post,
 				spot.address,
-				postLike.isNotNull()))
+				postLike.isNotNull(),
+				post.isPrivate))
 			.from(post)
 			.join(post.spot, spot)
 			.join(post.writer, writer).fetchJoin()

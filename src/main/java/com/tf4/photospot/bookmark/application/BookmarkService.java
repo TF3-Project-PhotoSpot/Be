@@ -14,6 +14,7 @@ import com.tf4.photospot.bookmark.application.request.ReadBookmarkFolderList;
 import com.tf4.photospot.bookmark.application.response.BookmarkCoord;
 import com.tf4.photospot.bookmark.application.response.BookmarkFolderResponse;
 import com.tf4.photospot.bookmark.application.response.BookmarkListResponse;
+import com.tf4.photospot.bookmark.application.response.BookmarkOfSpotResponse;
 import com.tf4.photospot.bookmark.application.response.BookmarkResponse;
 import com.tf4.photospot.bookmark.domain.Bookmark;
 import com.tf4.photospot.bookmark.domain.BookmarkFolder;
@@ -23,7 +24,7 @@ import com.tf4.photospot.bookmark.infrastructure.BookmarkQueryRepository;
 import com.tf4.photospot.bookmark.presentation.request.ReadBookmarkRequest;
 import com.tf4.photospot.global.exception.ApiException;
 import com.tf4.photospot.global.exception.domain.BookmarkErrorCode;
-import com.tf4.photospot.post.application.response.PostPreviewResponse;
+import com.tf4.photospot.post.application.response.RecentPostPreviewResponse;
 import com.tf4.photospot.spot.application.SpotService;
 import com.tf4.photospot.spot.domain.Spot;
 import com.tf4.photospot.user.application.UserService;
@@ -63,12 +64,12 @@ public class BookmarkService {
 	public BookmarkListResponse getBookmarks(ReadBookmarkRequest request) {
 		Slice<Bookmark> bookmarks = bookmarkQueryRepository.findBookmarksOfFolder(
 			request.bookmarkFolderId(), request.userId(), request.pageable());
-		final Map<Long, List<PostPreviewResponse>> postPreviewsGroupBySpot = spotService.getRecentPostPreviewsInSpots(
+		final Map<Long, List<RecentPostPreviewResponse>> postPreviewsGroup = spotService.getRecentPostPreviewsInSpots(
 				bookmarks.map(Bookmark::getSpot).toList(), request.postPreviewCount())
 			.stream()
-			.collect(Collectors.groupingBy(PostPreviewResponse::spotId));
+			.collect(Collectors.groupingBy(RecentPostPreviewResponse::spotId));
 		final List<BookmarkResponse> bookmarkResponses = bookmarks.map(bookmark ->
-			BookmarkResponse.of(bookmark, postPreviewsGroupBySpot.get(bookmark.getSpotId()))).getContent();
+			BookmarkResponse.of(bookmark, postPreviewsGroup.get(bookmark.getSpotId()))).getContent();
 		return BookmarkListResponse.builder()
 			.bookmarks(bookmarkResponses)
 			.hasNext(bookmarks.hasNext())
@@ -103,5 +104,21 @@ public class BookmarkService {
 
 	public List<BookmarkCoord> getAllMyBookmarkCoord(Long userId) {
 		return bookmarkQueryRepository.findAllMyBookmarkCoord(userId);
+	}
+
+	public List<BookmarkOfSpotResponse> findBookmarksOfSpot(Long spotId, Long userId) {
+		return bookmarkQueryRepository.findBookmarksOfSpot(spotId, userId);
+	}
+
+	@Transactional
+	public void updateBookmarkFolder(
+		Long bookmarkFolderId,
+		String newName,
+		String newDescription,
+		String newColor
+	) {
+		final BookmarkFolder bookmarkFolder = bookmarkFolderRepository.findById(bookmarkFolderId)
+			.orElseThrow(() -> new ApiException(BookmarkErrorCode.INVALID_BOOKMARK_FOLDER_ID));
+		bookmarkFolder.update(newName, newDescription, newColor);
 	}
 }

@@ -12,6 +12,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import org.assertj.core.groups.Tuple;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Test;
@@ -25,6 +26,7 @@ import com.tf4.photospot.bookmark.application.request.ReadBookmarkFolderList;
 import com.tf4.photospot.bookmark.application.response.BookmarkCoord;
 import com.tf4.photospot.bookmark.application.response.BookmarkFolderResponse;
 import com.tf4.photospot.bookmark.application.response.BookmarkListResponse;
+import com.tf4.photospot.bookmark.application.response.BookmarkOfSpotResponse;
 import com.tf4.photospot.bookmark.application.response.BookmarkResponse;
 import com.tf4.photospot.bookmark.domain.Bookmark;
 import com.tf4.photospot.bookmark.domain.BookmarkFolder;
@@ -229,5 +231,87 @@ class BookmarkServiceTest extends IntegrationTestSupport {
 				assertThat(bookmarkCoord.spotId()).isEqualTo(spot2.getId());
 				assertThat(convert(bookmarkCoord.coord())).isEqualTo(convert(spot2.getCoord()));
 			});
+	}
+
+	@DisplayName("특정 장소에 대한 유저의 북마크 정보를 조회한다.")
+	@Test
+	void getBookmarksOfSpot() {
+		//given
+		var spot = spotRepository.save(createSpot());
+		var me = userRepository.save(createUser("bean"));
+		var folder1 = bookmarkFolderRepository.save(createBookmarkFolder(me, "folder1"));
+		var folder2 = bookmarkFolderRepository.save(createBookmarkFolder(me, "folder2"));
+		final Bookmark bookmarkOfFolder1 = bookmarkRepository.save(createBookmark(folder1, spot));
+		final Bookmark bookmarkOfFolder2 = bookmarkRepository.save(createBookmark(folder2, spot));
+		//when
+		List<BookmarkOfSpotResponse> bookmarksOfSpot = bookmarkService.findBookmarksOfSpot(spot.getId(), me.getId());
+
+		//then
+		assertThat(bookmarksOfSpot).hasSize(2)
+			.extracting("bookmarkFolderId", "name", "color", "bookmarkId")
+			.containsAnyOf(
+				new Tuple(folder1.getId(), folder1.getName(), folder1.getColor(), bookmarkOfFolder1.getId()),
+				new Tuple(folder2.getId(), folder2.getName(), folder2.getColor(), bookmarkOfFolder2.getId())
+			);
+	}
+
+	@DisplayName("특정 장소에 대한 유저의 북마크 정보가 없으면 빈 리스트가 반환된다.")
+	@Test
+	void getEmptyBookmarksOfSpot() {
+		//given
+		var spot = spotRepository.save(createSpot());
+		var me = userRepository.save(createUser("bean"));
+		//when
+		List<BookmarkOfSpotResponse> bookmarksOfSpot = bookmarkService.findBookmarksOfSpot(spot.getId(), me.getId());
+
+		//then
+		assertThat(bookmarksOfSpot).isEmpty();
+	}
+
+	@DisplayName("북마크 폴더를 수정한다.")
+	@Test
+	void updateBookmarkFolder() {
+		//given
+		String newName = "newName";
+		String newDescription = "newDescription";
+		String newColor = "newColor";
+		final User user = userRepository.save(createUser("bean"));
+		final BookmarkFolder bookmarkFolder = bookmarkFolderRepository.save(BookmarkFolder.builder()
+			.user(user)
+			.name("name")
+			.description("description")
+			.color("color")
+			.totalCount(0)
+			.build());
+		//when
+		bookmarkService.updateBookmarkFolder(bookmarkFolder.getId(),
+			newName, newDescription, newColor);
+		em.flush();
+		em.clear();
+		//then
+		assertThat(bookmarkFolderRepository.findById(bookmarkFolder.getId()))
+			.isPresent()
+			.get()
+			.extracting("name", "description", "color")
+			.containsExactly(newName, newDescription, newColor);
+	}
+
+	@DisplayName("북마크 폴더 수정 시 폴더를 찾을 수 없으면 INVALID_BOOKMARK_FOLDER_ID 예외가 발생한다.")
+	@Test
+	void updateFailNotFoundBookmarkFolder() {
+		//given
+		final User user = userRepository.save(createUser("bean"));
+		final BookmarkFolder bookmarkFolder = bookmarkFolderRepository.save(BookmarkFolder.builder()
+			.user(user)
+			.name("name")
+			.description("description")
+			.color("color")
+			.totalCount(0)
+			.build());
+		//when
+		//then
+		assertThatThrownBy(() -> bookmarkService.updateBookmarkFolder(bookmarkFolder.getId() + 1,
+			"name", "des", "color"))
+			.hasMessage(BookmarkErrorCode.INVALID_BOOKMARK_FOLDER_ID.getMessage());
 	}
 }

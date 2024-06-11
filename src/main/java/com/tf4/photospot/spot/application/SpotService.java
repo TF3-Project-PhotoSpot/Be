@@ -12,6 +12,7 @@ import com.tf4.photospot.global.exception.ApiException;
 import com.tf4.photospot.global.exception.domain.SpotErrorCode;
 import com.tf4.photospot.post.application.request.PostSearchCondition;
 import com.tf4.photospot.post.application.response.PostPreviewResponse;
+import com.tf4.photospot.post.application.response.RecentPostPreviewResponse;
 import com.tf4.photospot.post.infrastructure.PostJdbcRepository;
 import com.tf4.photospot.post.infrastructure.PostQueryRepository;
 import com.tf4.photospot.spot.application.request.NearbySpotRequest;
@@ -52,7 +53,7 @@ public class SpotService {
 		if (recommendedSpots.isEmpty()) {
 			return RecommendedSpotListResponse.emptyResponse();
 		}
-		final List<PostPreviewResponse> postPreviews = getRecentPostPreviewsInSpots(recommendedSpots.getContent(),
+		final List<RecentPostPreviewResponse> postPreviews = getRecentPostPreviewsInSpots(recommendedSpots.getContent(),
 			request.postPreviewCount());
 		return RecommendedSpotListResponse.of(recommendedSpots, postPreviews);
 	}
@@ -64,11 +65,10 @@ public class SpotService {
 	public SpotResponse findSpot(PostSearchCondition searchCond, int mostPostTagCount) {
 		final Spot spot = spotRepository.findById(searchCond.spotId())
 			.orElseThrow(() -> new ApiException(SpotErrorCode.INVALID_SPOT_ID));
-		final Boolean bookmarked = spotQueryRepository.existsBookmark(spot.getId(), searchCond.userId());
 		final Slice<PostPreviewResponse> postPreviews = postQueryRepository.findPostPreviews(searchCond);
 		final List<MostPostTagRank> mostPostTagRanks = postJdbcRepository.findMostPostTagsOfSpot(spot,
 			mostPostTagCount);
-		return SpotResponse.of(spot, bookmarked, mostPostTagRanks, postPreviews.getContent());
+		return SpotResponse.of(spot, mostPostTagRanks, postPreviews.getContent());
 	}
 
 	public List<SpotCoordResponse> findSpotsOfMyPosts(Long userId) {
@@ -80,7 +80,7 @@ public class SpotService {
 			.orElseThrow(() -> new ApiException(SpotErrorCode.INVALID_SPOT_ID));
 	}
 
-	public List<PostPreviewResponse> getRecentPostPreviewsInSpots(List<Spot> spots, int postPreviewCount) {
+	public List<RecentPostPreviewResponse> getRecentPostPreviewsInSpots(List<Spot> spots, int postPreviewCount) {
 		return postJdbcRepository.findRecentPostPreviewsInSpots(spots, postPreviewCount);
 	}
 

@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.assertj.core.groups.Tuple;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Test;
@@ -816,5 +817,44 @@ class PostServiceTest extends IntegrationTestSupport {
 
 		//then
 		assertThrows(ApiException.class, action, PostErrorCode.CAN_NOT_DELETE_POSTS.getMessage());
+	}
+
+	@DisplayName("방명록 목록 조회 시 비공개 여부를 알 수 있다.")
+	@Test
+	void getPostDetailListContainsPrivateOrNot() {
+		//given
+		Spot spot = spotRepository.save(createSpot("spot address", createPoint(), 0L));
+		User me = userRepository.save(createUser("본인"));
+		User other = userRepository.save(createUser("다른사람"));
+		postRepository.saveAll(List.of(
+			createPost(spot, me, true),
+			createPost(spot, me, false),
+			createPost(spot, other, true),
+			createPost(spot, other, false)
+		));
+		var postSearchCondition = PostSearchCondition.builder()
+			.spotId(spot.getId())
+			.userId(me.getId())
+			.type(PostSearchType.POSTS_OF_SPOT)
+			.pageable(PageRequest.of(0, 10))
+			.build();
+		//when
+		var postList = postService.getPosts(postSearchCondition).content();
+		var postPreviewList = postService.getPostPreviews(postSearchCondition).content();
+		//then
+		assertThat(postList).hasSize(3)
+			.extracting("writer.id", "isPrivate")
+			.containsAnyOf(
+				new Tuple(me.getId(), true),
+				new Tuple(me.getId(), false),
+				new Tuple(other.getId(), false)
+			);
+		assertThat(postPreviewList).hasSize(3)
+			.extracting("writerId", "isPrivate")
+			.containsAnyOf(
+				new Tuple(me.getId(), true),
+				new Tuple(me.getId(), false),
+				new Tuple(other.getId(), false)
+			);
 	}
 }

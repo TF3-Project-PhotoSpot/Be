@@ -16,7 +16,9 @@ import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.tf4.photospot.bookmark.application.request.ReadBookmarkFolderList;
 import com.tf4.photospot.bookmark.application.response.BookmarkCoord;
+import com.tf4.photospot.bookmark.application.response.BookmarkOfSpotResponse;
 import com.tf4.photospot.bookmark.application.response.QBookmarkCoord;
+import com.tf4.photospot.bookmark.application.response.QBookmarkOfSpotResponse;
 import com.tf4.photospot.bookmark.domain.Bookmark;
 import com.tf4.photospot.bookmark.domain.BookmarkFolder;
 import com.tf4.photospot.global.exception.ApiException;
@@ -95,6 +97,21 @@ public class BookmarkQueryRepository extends QueryDslUtils {
 			.join(bookmark.bookmarkFolder, bookmarkFolder)
 			.join(bookmark.spot, spot)
 			.where(bookmarkFolder.user.id.eq(userId))
+			.fetch();
+	}
+
+	public List<BookmarkOfSpotResponse> findBookmarksOfSpot(Long spotId, Long userId) {
+		return queryFactory.select(new QBookmarkOfSpotResponse(
+				bookmarkFolder.id,
+				bookmarkFolder.name,
+				bookmarkFolder.color,
+				bookmark.id
+			))
+			.from(bookmarkFolder)
+			.join(bookmark).on(bookmark.bookmarkFolder.eq(bookmarkFolder))
+			.where(
+				bookmarkFolder.user.id.eq(userId).and(bookmark.spot.id.eq(spotId))
+			)
 			.fetch();
 	}
 }
